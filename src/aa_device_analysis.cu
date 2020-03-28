@@ -1,6 +1,5 @@
 //#define GPU_ANALYSIS_DEBUG
 //#define MSD_BOXCAR_TEST
-//#define GPU_PARTIAL_TIMER
 #define GPU_TIMER
 
 #include <vector>
@@ -198,11 +197,6 @@ namespace astroaccelerate {
     float *d_MSD_DIT = NULL; //TODO: make d_MSD_DIT also allocated outside
 
     MSD_plane_profile(d_MSD_interpolated, output_buffer, d_MSD_DIT, d_MSD_workarea, false, nTimesamples, nDMs, &h_boxcar_widths, tstart, dm_low[i], dm_high[i], OR_sigma_multiplier, enable_msd_baselinenoise, false, &MSD_time, &dit_time, &MSD_only_time);
-	
-#ifdef GPU_PARTIAL_TIMER
-    printf("    MSD time: Total: %f ms; DIT: %f ms; MSD: %f ms;\n", MSD_time, dit_time, MSD_only_time);
-#endif
-	
     //------------ Using MSD_plane_profile
     //-------------------------------------------------------------------------	
 	
@@ -259,9 +253,6 @@ namespace astroaccelerate {
 	timer.Stop();
 	SPDT_time += timer.Elapsed();
 	time_log.adding("SPD","SPDT",timer.Elapsed());
-#ifdef GPU_PARTIAL_TIMER
-	printf("    SPDT took:%f ms\n", timer.Elapsed());
-#endif
 	//-------------- SPDT
 			
 	//checkCudaErrors(cudaGetLastError());
@@ -277,9 +268,6 @@ namespace astroaccelerate {
 	  timer.Stop();
 	  PF_time += timer.Elapsed();
 	  time_log.adding("SPD", "Threshold", timer.Elapsed());
-#ifdef GPU_PARTIAL_TIMER
-	  printf("    Thresholding took:%f ms\n", timer.Elapsed());
-#endif
 	  //-------------- Thresholding
 	}
 	else if(candidate_algorithm==0) {
@@ -289,9 +277,6 @@ namespace astroaccelerate {
 	  timer.Stop();
 	  PF_time = timer.Elapsed();
 	  time_log.adding("SPD", "Peak_Find", timer.Elapsed());
-#ifdef GPU_PARTIAL_TIMER
-	  printf("    Peak finding took:%f ms\n", timer.Elapsed());
-#endif
 	  //-------------- Peak finding
 	}
 	else if(candidate_algorithm==2) { //peak filtering
@@ -300,13 +285,8 @@ namespace astroaccelerate {
 		timer.Stop();
 		PF_time = timer.Elapsed();
 		time_log.adding("SPD", "Stencil_7x7", timer.Elapsed());		
-#ifdef GPU_PARTIAL_TIMER
-          printf("    Peak finding (stencil 7x7) took: %f ms\n", timer.Elapsed());
-#endif
 	}
-			
-	//checkCudaErrors(cudaGetLastError());
-			
+	
 	cudaError_t e = cudaMemcpy(&temp_peak_pos, gmem_peak_pos, sizeof(int), cudaMemcpyDeviceToHost);
 
 	if(e != cudaSuccess) {
@@ -411,9 +391,6 @@ namespace astroaccelerate {
 
 		timer.Stop();
 		time_log.adding("SPD", "Clustering", timer.Elapsed());
-	#ifdef GPU_PARTIAL_TIMER
-		printf("    Clustering took:%f ms\n", timer.Elapsed());
-	#endif
 		//------------------------------------------------
 		*peak_pos = local_peak_pos;
 	}
