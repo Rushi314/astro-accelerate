@@ -183,9 +183,9 @@ namespace astroaccelerate {
 	
     //-------------------------------------------------------------------------
     //---------> Comparison between interpolated values and computed values
-#ifdef MSD_BOXCAR_TEST
-    MSD_plane_profile_boxcars(output_buffer, nTimesamples, nDMs, &h_boxcar_widths, OR_sigma_multiplier, dm_low[i], dm_high[i], tstart);
-#endif
+	#ifdef MSD_BOXCAR_TEST
+		MSD_plane_profile_boxcars(output_buffer, nTimesamples, nDMs, &h_boxcar_widths, OR_sigma_multiplier, dm_low[i], dm_high[i], tstart);
+	#endif
     //---------> Comparison between interpolated values and computed values
     //-------------------------------------------------------------------------
 	
@@ -247,92 +247,92 @@ namespace astroaccelerate {
       DM_shift = 0;
       int DM_list_size = (int)DM_list.size();
       for(int f=0; f<DM_list_size; f++) {
-	//-------------- SPDT
-	timer.Start();
-	SPDT_search_long_MSD_plane(&output_buffer[(size_t)(DM_shift)*(size_t)(nTimesamples)], d_boxcar_values, d_decimated, d_output_SNR, d_output_taps, d_MSD_interpolated, &PD_plan, max_iteration, nTimesamples, DM_list[f]);
-	timer.Stop();
-	SPDT_time += timer.Elapsed();
-	time_log.adding("SPD","SPDT",timer.Elapsed());
-	//-------------- SPDT
+        //-------------- SPDT
+        timer.Start();
+        SPDT_search_long_MSD_plane(&output_buffer[(size_t)(DM_shift)*(size_t)(nTimesamples)], d_boxcar_values, d_decimated, d_output_SNR, d_output_taps, d_MSD_interpolated, &PD_plan, max_iteration, nTimesamples, DM_list[f]);
+        timer.Stop();
+        SPDT_time += timer.Elapsed();
+        time_log.adding("SPD","SPDT",timer.Elapsed());
+        //-------------- SPDT
 			
-	//checkCudaErrors(cudaGetLastError());
+        #ifdef GPU_ANALYSIS_DEBUG
+        printf("    BC_shift:%zu; DMs_per_cycle:%d; f*DMs_per_cycle:%d; max_iteration:%d;\n", (size_t)(DM_shift)*(size_t)(nTimesamples), DM_list[f], DM_shift, max_iteration);
+        #endif
 			
-#ifdef GPU_ANALYSIS_DEBUG
-	printf("    BC_shift:%zu; DMs_per_cycle:%d; f*DMs_per_cycle:%d; max_iteration:%d;\n", (size_t)(DM_shift)*(size_t)(nTimesamples), DM_list[f], DM_shift, max_iteration);
-#endif
-			
-	if(candidate_algorithm==1){
-	  //-------------- Thresholding
-	  timer.Start();
-	  SPDT_threshold(d_output_SNR, d_output_taps, d_peak_list_DM, d_peak_list_TS, d_peak_list_SNR, d_peak_list_BW, gmem_peak_pos, cutoff, DM_list[f], nTimesamples, DM_shift, &PD_plan, max_iteration, local_max_list_size);
-	  timer.Stop();
-	  PF_time += timer.Elapsed();
-	  time_log.adding("SPD", "Threshold", timer.Elapsed());
-	  //-------------- Thresholding
-	}
-	else if(candidate_algorithm==0) {
-	  //-------------- Peak finding
-	  timer.Start();
-	  SPDT_peak_find(d_output_SNR, d_output_taps, d_peak_list_DM, d_peak_list_TS, d_peak_list_SNR, d_peak_list_BW, DM_list[f], nTimesamples, cutoff, local_max_list_size, gmem_peak_pos, DM_shift, &PD_plan, max_iteration);
-	  timer.Stop();
-	  PF_time = timer.Elapsed();
-	  time_log.adding("SPD", "Peak_Find", timer.Elapsed());
-	  //-------------- Peak finding
-	}
-	else if(candidate_algorithm==2) { //peak filtering
-		timer.Start();
-		SPDT_peak_find_stencil_7x7(d_output_SNR, d_output_taps, d_peak_list_DM, d_peak_list_TS, d_peak_list_SNR, d_peak_list_BW, DM_list[f], nTimesamples, cutoff, local_max_list_size, gmem_peak_pos, DM_shift, &PD_plan, max_iteration);
-		timer.Stop();
-		PF_time = timer.Elapsed();
-		time_log.adding("SPD", "Stencil_7x7", timer.Elapsed());		
-	}
+        if(candidate_algorithm==1){
+          //-------------- Thresholding
+          timer.Start();
+          SPDT_threshold(d_output_SNR, d_output_taps, d_peak_list_DM, d_peak_list_TS, d_peak_list_SNR, d_peak_list_BW, gmem_peak_pos, cutoff, DM_list[f], nTimesamples, DM_shift, &PD_plan, max_iteration, local_max_list_size);
+          timer.Stop();
+          PF_time += timer.Elapsed();
+          time_log.adding("SPD", "Threshold", timer.Elapsed());
+          //-------------- Thresholding
+        }
+        else if(candidate_algorithm==0) {
+          //-------------- Peak finding
+          timer.Start();
+          SPDT_peak_find(d_output_SNR, d_output_taps, d_peak_list_DM, d_peak_list_TS, d_peak_list_SNR, d_peak_list_BW, DM_list[f], nTimesamples, cutoff, local_max_list_size, gmem_peak_pos, DM_shift, &PD_plan, max_iteration);
+          timer.Stop();
+          PF_time = timer.Elapsed();
+          time_log.adding("SPD", "Peak_Find", timer.Elapsed());
+          //-------------- Peak finding
+        }
+        else if(candidate_algorithm==2) { //peak filtering
+          timer.Start();
+          SPDT_peak_find_stencil_7x7(d_output_SNR, d_output_taps, d_peak_list_DM, d_peak_list_TS, d_peak_list_SNR, d_peak_list_BW, DM_list[f], nTimesamples, cutoff, local_max_list_size, gmem_peak_pos, DM_shift, &PD_plan, max_iteration);
+          timer.Stop();
+          PF_time = timer.Elapsed();
+          time_log.adding("SPD", "Stencil_7x7", timer.Elapsed());		
+        }
 	
-	cudaError_t e = cudaMemcpy(&temp_peak_pos, gmem_peak_pos, sizeof(int), cudaMemcpyDeviceToHost);
+        cudaError_t e = cudaMemcpy(&temp_peak_pos, gmem_peak_pos, sizeof(int), cudaMemcpyDeviceToHost);
 
-	if(e != cudaSuccess) {
-	  LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- temp_peak_pos (" + std::string(cudaGetErrorString(e)) + ")");
-		exit(25);
-	}
+        if(e != cudaSuccess) {
+          LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- temp_peak_pos (" + std::string(cudaGetErrorString(e)) + ")");
+          exit(25);
+        }
 	
-#ifdef GPU_ANALYSIS_DEBUG
-	printf("    temp_peak_pos:%d; host_pos:%zu; max:%zu; local_max:%d;\n", temp_peak_pos, (*peak_pos), max_peak_size, local_max_list_size);
-#endif
-	if( temp_peak_pos>=local_max_list_size ) {
-	  printf("    Maximum list size reached! Increase list size or increase sigma cutoff.\n");
-	  temp_peak_pos=local_max_list_size;
-	}
-	if( ((*peak_pos) + temp_peak_pos)<max_peak_size){
-	  cudaError_t e = cudaMemcpy(&h_peak_list_DM[(*peak_pos)],  d_peak_list_DM,  temp_peak_pos*sizeof(unsigned int), cudaMemcpyDeviceToHost);
+        #ifdef GPU_ANALYSIS_DEBUG
+          printf("    temp_peak_pos:%d; host_pos:%zu; max:%zu; local_max:%d;\n", temp_peak_pos, (*peak_pos), max_peak_size, local_max_list_size);
+        #endif
 
-	  if(e != cudaSuccess) {
-	    LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- peak_list_DM (" + std::string(cudaGetErrorString(e)) + ")");
-	  }
-	  
-	  e = cudaMemcpy(&h_peak_list_TS[(*peak_pos)],  d_peak_list_TS,  temp_peak_pos*sizeof(unsigned int), cudaMemcpyDeviceToHost);
+        if( temp_peak_pos>=local_max_list_size ) {
+          printf("    Maximum list size reached! Increase list size or increase sigma cutoff.\n");
+          temp_peak_pos=local_max_list_size;
+        }
+        
+		if( ((*peak_pos) + temp_peak_pos)<max_peak_size){
+          cudaError_t e = cudaMemcpy(&h_peak_list_DM[(*peak_pos)],  d_peak_list_DM,  temp_peak_pos*sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
-	  if(e != cudaSuccess) {
-	    LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- peak_list_TS (" + std::string(cudaGetErrorString(e)) + ")");
-	  }
+          if(e != cudaSuccess) {
+            LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- peak_list_DM (" + std::string(cudaGetErrorString(e)) + ")");
+          }
 	  
-	  e = cudaMemcpy(&h_peak_list_SNR[(*peak_pos)], d_peak_list_SNR, temp_peak_pos*sizeof(float), cudaMemcpyDeviceToHost);
+          e = cudaMemcpy(&h_peak_list_TS[(*peak_pos)],  d_peak_list_TS,  temp_peak_pos*sizeof(unsigned int), cudaMemcpyDeviceToHost);
+          
+          if(e != cudaSuccess) {
+            LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- peak_list_TS (" + std::string(cudaGetErrorString(e)) + ")");
+          }
+          
+          e = cudaMemcpy(&h_peak_list_SNR[(*peak_pos)], d_peak_list_SNR, temp_peak_pos*sizeof(float), cudaMemcpyDeviceToHost);
+          
+          if(e != cudaSuccess) {
+            LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- peak_list_SNR (" + std::string(cudaGetErrorString(e)) + ")");
+          }
+          
+          e = cudaMemcpy(&h_peak_list_BW[(*peak_pos)],  d_peak_list_BW,  temp_peak_pos*sizeof(unsigned int), cudaMemcpyDeviceToHost);
+          
+          if(e != cudaSuccess) {
+            LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- peak_list_BW (" + std::string(cudaGetErrorString(e)) + ")");
+          }
+          
+          *peak_pos = (*peak_pos) + temp_peak_pos;
+        }
+        else printf("Error peak list is too small!\n");
 
-	  if(e != cudaSuccess) {
-	    LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- peak_list_SNR (" + std::string(cudaGetErrorString(e)) + ")");
-	  }
-	  
-	  e = cudaMemcpy(&h_peak_list_BW[(*peak_pos)],  d_peak_list_BW,  temp_peak_pos*sizeof(unsigned int), cudaMemcpyDeviceToHost);
-	  
-	  if(e != cudaSuccess) {
-	    LOG(log_level::error, "Could not cudaMemcpy in aa_device_analysis.cu -- peak_list_BW (" + std::string(cudaGetErrorString(e)) + ")");
-	  }
-	  
-	  *peak_pos = (*peak_pos) + temp_peak_pos;
-	}
-	else printf("Error peak list is too small!\n");
-
-	DM_shift = DM_shift + DM_list[f];
-	cudaMemset((void*) gmem_peak_pos, 0, sizeof(int));
-      }
+        DM_shift = DM_shift + DM_list[f];
+        cudaMemset((void*) gmem_peak_pos, 0, sizeof(int));
+      } // for loop through DM chunks
 
 	if(candidate_algorithm==2) { //peak filtering
 		//------------peak clustering from AA_experimental
@@ -393,7 +393,7 @@ namespace astroaccelerate {
 		time_log.adding("SPD", "Clustering", timer.Elapsed());
 		//------------------------------------------------
 		*peak_pos = local_peak_pos;
-	}
+	} // peak filtering
 		
       //------------------------> Output
 	float *h_peak_list;
@@ -410,68 +410,68 @@ namespace astroaccelerate {
       FILE *fp_out;
 		
       if(candidate_algorithm==1){
-	if((*peak_pos)>0){
-	  if(dump_to_disk) {
-	    sprintf(filename, "analysed-t_%.2f-dm_%.2f-%.2f.dat", tstart, dm_low[i], dm_high[i]);
-	    if (( fp_out = fopen(filename, "wb") ) == NULL)	{
-	      fprintf(stderr, "Error opening output file!\n");
-	      exit(0);
-	    }
-	    fwrite(h_peak_list, (*peak_pos)*sizeof(float), 4, fp_out);
-	    fclose(fp_out);
-	  }
+        if((*peak_pos)>0){
+          if(dump_to_disk) {
+            sprintf(filename, "analysed-t_%.2f-dm_%.2f-%.2f.dat", tstart, dm_low[i], dm_high[i]);
+            if (( fp_out = fopen(filename, "wb") ) == NULL)	{
+              fprintf(stderr, "Error opening output file!\n");
+              exit(0);
+            }
+            fwrite(h_peak_list, (*peak_pos)*sizeof(float), 4, fp_out);
+            fclose(fp_out);
+          }
 
-	  if(dump_to_user) {
-	    output.dm_low  = dm_low [i];
-	    output.dm_high = dm_high[i];
-	    std::vector<analysis_pulse> pulses;
-	    for(auto count = 0; count < i_peak_pos; count++) {
-	      analysis_pulse tmp = {h_peak_list[4*count], h_peak_list[4*count + 1], h_peak_list[4*count + 2], h_peak_list[4*count + 3]};
-	      pulses.push_back(std::move(tmp));
-	    }
-	    output.pulses = std::move(pulses);
-	  }
-	}
-      }
-      else {
-	if((*peak_pos)>0){
-	  if(dump_to_disk) {
-	    sprintf(filename, "peak_analysed-t_%.2f-dm_%.2f-%.2f.dat", tstart, dm_low[i], dm_high[i]);
-	    if (( fp_out = fopen(filename, "wb") ) == NULL)	{
-	      fprintf(stderr, "Error opening output file!\n");
-	      exit(0);
-	    }
-	    fwrite(h_peak_list, (*peak_pos)*sizeof(float), 4, fp_out);
-	    fclose(fp_out);
-	  }
-
-	  if(dump_to_user) {
-	    output.dm_low  = dm_low [i];
-	    output.dm_high = dm_high[i];
-	    std::vector<analysis_pulse> pulses;
+          if(dump_to_user) {
+            output.dm_low  = dm_low [i];
+            output.dm_high = dm_high[i];
+            std::vector<analysis_pulse> pulses;
             for(auto count = 0; count < i_peak_pos; count++) {
               analysis_pulse tmp = {h_peak_list[4*count], h_peak_list[4*count + 1], h_peak_list[4*count + 2], h_peak_list[4*count + 3]};
               pulses.push_back(std::move(tmp));
             }
             output.pulses = std::move(pulses);
-	  }
-	}
+          }
+        }
+      }
+      else {
+        if((*peak_pos)>0){
+          if(dump_to_disk) {
+            sprintf(filename, "peak_analysed-t_%.2f-dm_%.2f-%.2f.dat", tstart, dm_low[i], dm_high[i]);
+            if (( fp_out = fopen(filename, "wb") ) == NULL)	{
+              fprintf(stderr, "Error opening output file!\n");
+              exit(0);
+            }
+            fwrite(h_peak_list, (*peak_pos)*sizeof(float), 4, fp_out);
+            fclose(fp_out);
+          }
+        
+          if(dump_to_user) {
+            output.dm_low  = dm_low [i];
+            output.dm_high = dm_high[i];
+            std::vector<analysis_pulse> pulses;
+                   for(auto count = 0; count < i_peak_pos; count++) {
+                     analysis_pulse tmp = {h_peak_list[4*count], h_peak_list[4*count + 1], h_peak_list[4*count + 2], h_peak_list[4*count + 3]};
+                     pulses.push_back(std::move(tmp));
+                   }
+                   output.pulses = std::move(pulses);
+          }
+        }
       }
       delete[] h_peak_list;
       //------------------------> Output
-
-    }
+    } // DM_list_size > 0
     else printf("Error not enough memory to search for pulses\n");
 
     total_timer.Stop();
     total_time = total_timer.Elapsed();
     time_log.adding("SPD", "total", total_time);
     time_log.adding("SPD", "MSD", MSD_time);
-#ifdef GPU_TIMER
-    printf("\n  TOTAL TIME OF SPS:%f ms\n", total_time);
-    printf("  MSD_time: %f ms; SPDT time: %f ms; Candidate selection time: %f ms;\n", MSD_time, SPDT_time, PF_time);
-    printf("----------<\n\n");
-#endif
+    
+	#ifdef GPU_TIMER
+      printf("\n  TOTAL TIME OF SPS:%f ms\n", total_time);
+      printf("  MSD_time: %f ms; SPDT time: %f ms; Candidate selection time: %f ms;\n", MSD_time, SPDT_time, PF_time);
+      printf("----------<\n\n");
+    #endif
 
     //----------> GPU part
     //---------------------------------------------------------------------------
