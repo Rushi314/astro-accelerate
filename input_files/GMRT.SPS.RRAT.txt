@@ -1,0 +1,26 @@
+range    0    150  0.1  1 1
+range    150  300  0.2  2 2
+range    300  500  0.25 2 2
+sigma_cutoff	6
+sigma_constant  3.0
+max_boxcar_width_in_sec 0.5
+periodicity_sigma_cutoff 20
+periodicity_harmonics 32
+analysis
+-acceleration
+-output_ffdot_plan
+-output_fdas_list
+-periodicity
+-output_dmt
+zero_dm
+-zero_dm_with_outliers
+-rfi
+-threshold
+baselinenoise
+-fdas_custom_fft
+-fdas_inbin
+-fdas_norm
+debug
+-analysis_debug
+-failsafe
+file /data/jroy/data/HR_1850-48_ia_500_200_4096_4_1_8_14may2018.raw.fil
