@@ -9,7 +9,7 @@ python spsplotii_frb_detect.py fname --ls 1.0 --auto True
 
 In the command above, replace the “fname” with filename of the input data file. It is recommended to run the code with a low value of “--ls” such as 1.0. This will allow for maximum data capture from the input file such that the mean SNR of the data is much lower than the SNR of the FRB.
 
-#### FRB Detection algorithm:
+#### FRB Detection algorithm(Matched Filtering with Gaussian Pulse profile):
 
 The input data file is read and some data is clipped from it. This clipping depends upon values of “ls”, “us”, “lt”, “ut”, “lw”, “uw”, “ld” and “ud” - these are limits upon the minimum and maximum SNR, time, pulse width, and DM respectively. Arrays which store values of DM, SNR, width, number of pulses and time are returned after clipping. The detection algorithm works on these arrays.
 
