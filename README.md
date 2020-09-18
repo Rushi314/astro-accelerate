@@ -1,4 +1,4 @@
-### Updates to the astroacclerate pipeline for realtime processing of data from Giant Meterwave Radio Telescope, Kholad, Pune , India
+## Updates to the astroacclerate pipeline for realtime processing of data from Giant Meterwave Radio Telescope, Kholad, Pune , India
 
 
 ## i) Python script documentation - spsplotii_frb_detect.py
