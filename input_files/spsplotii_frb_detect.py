@@ -1,6 +1,7 @@
 import time as tm
 import numpy as Num
 import sys
+import csv
 from optparse import OptionParser
 from collections import Counter
 
@@ -118,10 +119,12 @@ parser.add_option("--mjd", "--mjd_time", dest="mjd", type="float",
 		help="MJD of when the first sample")
 parser.add_option("--ra", "--src_ra", dest="ra", type="float",
 		help="RA of source")
-parser.add_option("--dec", "--src_dec", dest="dec", type="int",
+parser.add_option("--dec", "--src_dec", dest="dec", type="float",
 		help="Declanation of source")
 parser.add_option("--buf_t", "--buf_t", dest="buf_t", type="float",
 		help="Amount of telescope time uniquely processed in each buffer")
+parser.add_option("--new_file_flag", "--new_file_flag", dest="new_file_flag", type="int",
+		help="Check weather the radec.dat has changed")       #Added by Rushikesh
 
 
 
@@ -150,6 +153,7 @@ mjd = opts.mjd
 ra = opts.ra
 dec = opts.dec
 buf_t = opts.buf_t
+new_file_flag = opts.new_file_flag #Added by Rushikesh
 
 t_time = float(buf_t)*int(buf_count)
 print("telescope time in each buffer (unique): ", buf_t)
@@ -163,19 +167,18 @@ else:
 
 print ("buf_count: ",buf_count," mjd: ",mjd," ra: ",ra, " dec: ", dec)
 
-ra_hh = int(ra/10000)
-ra_mm = int((ra - ra_hh*10000)/100)
-ra_sec = ra%100
-print("RA (HH:MM:SS)", ra_hh, ra_mm, ra_sec)
+#ra_hh = int(ra/10000)
+#ra_mm = int((ra - ra_hh*10000)/100)
+#ra_sec = ra%100
+#print("RA (HH:MM:SS)", ra_hh, ra_mm, ra_sec)
 
-dec_hh = int(abs(dec)/10000)
-dec_mm = int(abs(abs(dec) - dec_hh*10000)/100)
-dec_sec = abs(dec%100)
-print("DEC (HH:MM:SS)", dec_hh, dec_mm, dec_sec)
+#dec_hh = int(abs(dec)/10000)
+#dec_mm = int(abs(abs(dec) - dec_hh*10000)/100)
+#dec_sec = abs(dec%100)
+#print("DEC (HH:MM:SS)", dec_hh, dec_mm, dec_sec)
 
-ra_deg = ( ra_hh + ra_mm/60.0 + ra_sec/3600.0 ) * 15.0
-dec_deg = dec_const * ( abs(dec_hh) + dec_mm/60.0 + dec_sec/3600.0 )
-
+ra_deg = ra
+dec_deg = dec
 print("RA and DEC in degrees: ", ra_deg, dec_deg)
 
 # Converting uw and lw from seconds to the scale of data; multiplication by 1000 to scale down from second to millisecond:
@@ -257,11 +260,11 @@ if opts.askip == "True":
         print ("step = ", i+1, "out of ", max_ld_loc)
         ld = ld_range[i]
         ud = ld_range[i+1]
-        D, C, W, T, N = sk_true(DM,SNR,time,width,ld,ud,ls,us,lt,ut,lw,uw,cs)
+        D, C, W, T, N = sk_true(DM,SNR,time,width,ld,ud,ls,us,lt,ut,lw,uw,cs) ##RD:Outlier removal and sorted output:
         
         rad_dm = 5.0
         func_thresh = 1.3
-        grid_dm=Num.arange(ld,ud+5,5)
+        grid_dm=Num.arange(ld,ud+5,5)  ##THe DM is taken in the steps of 5 need to follow the single pulse methodology?
 
         for val in grid_dm:
             loc = Num.squeeze(Num.where(abs(val-D) < rad_dm))
@@ -300,31 +303,64 @@ if opts.askip == "True":
                 
         if num_frb > 1:
             for loc in range(0,num_frb):
-                frnd_loc = Num.where(abs(grid_val-grid_val[frb_loc[loc]]) <= 4.*rad_dm)
+                frnd_loc = Num.where(abs(grid_val-grid_val[frb_loc[loc]]) <= 4.*rad_dm) ##Whats this for? Wants to check weather any detection within +- 20 DM.
                 max_frnd_loc = Num.where(snr_val[frnd_loc] != max(snr_val[frnd_loc]))
             found_frb = Num.delete(frnd_loc, max_frnd_loc[0])
             print ("#FRB found! DM: ", d_val[found_frb][0], " Time: ", t_val[found_frb][0], " Width: ", w_val[found_frb][0], " SNR: ", snr_val[found_frb][0])
             frb_flag = True
-
 	    frb_time = t_time + t_val[found_frb][0]	
 	    print("frb time:: ", frb_time)
-	    fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" + "{:.3f}".format(frb_time) + ".txt"
-	    print("Name of FRB detection file: ", fname_frb)
-	    frb_file = open(fname_frb,"w")
-	    frb_file.write("%f \t %f \t %f \t %f \t %f \n" % (frb_time, t_val[found_frb][0], d_val[found_frb][0], snr_val[found_frb][0], w_val[found_frb][0]))
-	    frb_file.close()
-
+# Rushikesh Edits -----
+	    fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" + "{:.3f}".format(frb_time) + ".csv"
+            csvRow = [frb_time, t_val[found_frb][0], d_val[found_frb][0], snr_val[found_frb][0], w_val[found_frb][0]]
+            fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" + ".csv"
+            print("Name of FRB detection file: ", fname_frb)
+       	    csvfile = fname_frb
+	    if buf_count == 0 or buf_count%4 == 0 or new_file_flag == 1:
+           	    fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" +"bc_start_"+ str(buf_count) + "_" + ".csv"
+            	    print("Name of FRB detection file: ", fname_frb)
+       	    	    csvfile = fname_frb
+            	    with open(csvfile, 'w') as fp:
+    	        	writer = csv.writer(fp, delimiter='\t',lineterminator='\n')
+	    		writer.writerow(csvRow)
+                    fp.close()
+	    else:   
+                    fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" +"bc_start_"+ str((buf_count)-(buf_count)%4) + "_" + ".csv"
+            	    print("Name of FRB detection file: ", fname_frb)
+ 		    csvfile = fname_frb     #RD:This and the above filename should be exactly same
+            	    with open(csvfile, 'a') as fp:
+    	        	writer = csv.writer(fp, delimiter='\t',lineterminator='\n')
+	    		writer.writerow(csvRow) 
+                    fp.close()           
+	    
+            
+# edits end ------
         elif num_frb == 1:
             print ("*FRB found! DM: ", d_val[frb_loc], " Time: ", t_val[frb_loc], " Width: ", w_val[frb_loc], " SNR: ", snr_val[frb_loc])
             frb_flag = True
 
 	    frb_time = t_time + t_val[frb_loc]	
 	    print("frb time:: ", frb_time)
-	    fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" + "{:.3f}".format(frb_time) + ".txt"
-	    print("Name of FRB detection file: ", fname_frb)
-	    frb_file = open(fname_frb,"w")
-	    frb_file.write("%f \t %f \t %f \t %f \t %f \n" % (frb_time, t_val[frb_loc], d_val[frb_loc], snr_val[frb_loc], w_val[frb_loc]))
-	    frb_file.close()
+            csvRow = [frb_time, t_val[frb_loc], d_val[frb_loc], snr_val[frb_loc], w_val[frb_loc]]
+            fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" + ".csv"
+            print("Name of FRB detection file: ", fname_frb)
+       	    csvfile = fname_frb
+	    if buf_count == 0 or buf_count%4 == 0 or new_file_flag == 1:
+           	    fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" +"bc_start_"+ str(buf_count) + "_" + ".csv"
+            	    print("Name of FRB detection file: ", fname_frb)
+       	    	    csvfile = fname_frb
+            	    with open(csvfile, 'w') as fp:
+    	        	writer = csv.writer(fp, delimiter='\t',lineterminator='\n')
+	    		writer.writerow(csvRow)
+                    fp.close()
+	    else:   
+                    fname_frb = "FRB_detection_" + str(mjd) + "_" + str(ra_deg) + "_" + str(dec_deg) + "_" +"bc_start_"+ str((buf_count)-(buf_count)%4) + "_" + ".csv"
+            	    print("Name of FRB detection file: ", fname_frb)
+ 		    csvfile = fname_frb     ##This and the above filename should be same
+            	    with open(csvfile, 'a') as fp:
+    	        	writer = csv.writer(fp, delimiter='\t',lineterminator='\n')
+	    		writer.writerow(csvRow)
+                    fp.close()
             import time as tm
             print ("--- seconds --- ", tm.time() - start_time)
             sys.exit()	    

@@ -20,31 +20,31 @@ On TAPTI server, run the script using:
 
 #define _POSIX_SOURCE
 #include <unistd.h>
-
 #include <fstream> // for file-access
 #include <string>
-
+#include <vector>
 #include <iostream>
 
 #include "aa_ddtr_plan.hpp"
 #include "aa_ddtr_strategy.hpp"
 #include "aa_filterbank_metadata.hpp"
 #include "aa_permitted_pipelines_2.hpp"
-
 #include "aa_analysis_plan.hpp"
 #include "aa_analysis_strategy.hpp"
-
 #include "aa_log.hpp"
 #include "aa_sigproc_input.hpp"
-
 #include "aa_gpu_timer.hpp"
+#include "frb_shm.h"   //Added  by Rushikesh
+#include "externalLibraries.h"
 
-// below libraries added to check the time stamp of source.hdr
 #include <cstdlib>
 #include <cstdio>
 #include <array>
 
 #include <wordexp.h>
+
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include <sstream>
 
@@ -52,6 +52,11 @@ On TAPTI server, run the script using:
 
 #include <algorithm>  // to remove new line charcter from string
 
+//-----Added by Rushikesh----
+
+using namespace std;
+
+//----- End ----
 
 using namespace astroaccelerate;
 
@@ -59,7 +64,7 @@ std::string timestamp(std::string source_fname);
 
 //int main() {
 int main(int argc,  char **argv) {
-  
+
   unsigned long int f_pos;  // input file poistion variable
 
   int sysint, sysint1, sysint2, sysint3, sysint4, sysint5, sysint6;	// this is to store value returned by system command when script is called at the end of file.
@@ -75,6 +80,7 @@ int main(int argc,  char **argv) {
 // buf count loop variables
   int buf_count = 0;
   int max_buf_count = 8;
+  int new_file_flag = 1;
 
 // vaiable to enable storing of each output global_peaks.dat file 
   int test_flg = 1;
@@ -87,7 +93,7 @@ int main(int argc,  char **argv) {
     float time_tmp, time_first_read, time_buf_read, time_buf_process, time_conc_files_find_frb, time_total;
     aa_gpu_timer       timer_var, timer_var_total;
 
-// timestamp of source.hdr
+// timestamp of radec.dat
   std::string result_tmp, result_time_stamp;
 
 // varibales that store the amount of data processed
@@ -97,7 +103,7 @@ int main(int argc,  char **argv) {
 
 // variables to write the python file name
   std::stringstream stream;
-  std::string s_ra, s_dec, s_mjd, s_bcount, py_fname, s_tsamp_unique;
+  std::string s_ra, s_dec, s_mjd, s_bcount, py_fname, s_tsamp_unique, s_new_file_flag;
 
 // finding the intial precision to be set later
   std::streamsize ss = std::cout.precision();
@@ -105,21 +111,11 @@ int main(int argc,  char **argv) {
 
 
   aa_ddtr_plan ddtr_plan;
-// dm ranges below for FRB 1000 data (if commented out - it is being read from the input file):
-/*
-  ddtr_plan.add_dm(0, 150, 0.1, 1, 1);
-  ddtr_plan.add_dm(150, 300, 0.2, 2, 2);
-  ddtr_plan.add_dm(300, 500, 0.25, 2, 2);
-  ddtr_plan.add_dm(500, 900, 0.4, 4, 4);
-  ddtr_plan.add_dm(900, 1200, 0.6, 4, 4);
-  ddtr_plan.add_dm(1200, 1500, 0.8, 8, 8);
-  ddtr_plan.add_dm(1500, 2000, 1.0, 8, 8);
-*/
 
 // reading the input file for dm range and other input data::----------------------------------------------------
 // extracting the input file name from the argument passed through the terminal to the astroaccelerate.sh bash script
   if (argc > 1) {
-        printf("argv[1] = %s", argv[1]); 
+        printf("argv[1] = %s", argv[1]); printf("argv[2] = %s", argv[0]);
     } else {
         printf("No file name entered. Exiting...");
         return 0;
@@ -131,22 +127,9 @@ int main(int argc,  char **argv) {
   printf("\n ddtr_plan.user_dm(ddtr_plan.range()-1).high: %f \n", ddtr_plan.user_dm(ddtr_plan.range()-1).high);
   std::string file_name_input_str;
 
-//  filterbank_datafile_input.read_metadata_input(&sigma_cutoff_input, &sigma_constant_input, &max_boxcar_width_in_sec_input, &periodicity_sigma_cutoff_input, &periodicity_harmonics_input, &ddtr_plan, &baselinenoise_val, &analysis_val, &debug_val, &file_name_input_str, &config_path);
-
-
 // input file read ----------------------------------------------------------------------------------------------
   printf("\n file_name_input :: %s \n", file_name_input);
   printf("\nbaselinenoise_val: is: %d \n", baselinenoise_val);
-
-//  for (int i =0; i < 7; i++) {
-//    printf("\n ddtr_plan[0]: low: %f high: %f step: %f inBin: %d outBin: %d\n", ddtr_plan.user_dm(i).low, ddtr_plan.user_dm(i).high, ddtr_plan.user_dm(i).step, ddtr_plan.user_dm(i).inBin, ddtr_plan.user_dm(i).outBin);
-//  }
-
-
-/*  const float sigma_cutoff = 6.0;
-  const float sigma_constant = 3.0;
-  const float max_boxcar_width_in_sec = 0.5;
-*/
 
 // assigning variables from the input file:
   const float sigma_cutoff = sigma_cutoff_input;
@@ -158,13 +141,9 @@ int main(int argc,  char **argv) {
   const float periodicity_sigma_cutoff = periodicity_sigma_cutoff_input;
   const float periodicity_harmonics = periodicity_harmonics_input;
 
+  
 
 // input data file location and config file path ------------------------------------------------------------------------------------------------------------------------------
-
-//  aa_sigproc_input       filterbank_datafile("/mnt/data/AstroAccelerate/filterbank/BenMeerKAT.fil");
-//  aa_sigproc_input       filterbank_datafile("/data/jroy/data/FRB_DM1000_163.84us_4K_7mP_4msW_3sig.header.fil");
-//  aa_sigproc_input       filterbank_datafile("/data/jroy/data/FRB_DM1000_163.84us_4K_7mP_4msW_3sig.header.fil");
-//  aa_sigproc_input       filterbank_datafile("/data/jroy/data/FRB_DM1000_163.84us_4K_7mP_4msW_3sig.header.gpt");
 
   std:: string fname_input(file_name_input);
   printf("\n fname_input::%s::test\n", fname_input.c_str());
@@ -181,7 +160,7 @@ int main(int argc,  char **argv) {
   printf("\n configpath_name::%s::test\n", configpath_name.c_str());
 
   std::string source_fname, gpu_fname;
-  source_fname = configpath_name + "source.hdr";
+  source_fname = configpath_name + "radec.dat"; //RD: Feb 7 CHECK
   gpu_fname = configpath_name + "gpu.hdr";
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -191,19 +170,6 @@ int main(int argc,  char **argv) {
   aa_sigproc_input       filterbank_datafile_config(gpu_fname);
   aa_filterbank_metadata filterbank_metadata = filterbank_datafile_config.read_metadata(ddtr_plan.user_dm(ddtr_plan.range()-1).high, configpath_name);
 
-/*
-  // Filterbank metadata
-  // (Data description from "SIGPROC-v3.7 (Pulsar) Signal Processing Programs")
-  const double tstart = 50000;
-  const double tsamp = 6.4E-5;
-  const double nbits = 8;
-  const double nsamples = 937984;
-  const double fch1 = 1564;
-  const double foff = -0.208984;
-  const double nchans = 2048;
-  
-  aa_filterbank_metadata metadata(tstart, tsamp, nbits, nsamples, fch1, foff, nchans);
-*/
 // variables assigned after reading gu.hdr file
   const double tstart = filterbank_metadata.tstart();
   const double tsamp = filterbank_metadata.tsamp();
@@ -216,12 +182,22 @@ int main(int argc,  char **argv) {
   aa_filterbank_metadata metadata(tstart, tsamp, nbits, nsamples, fch1, foff, nchans);
 
   printf("\n filterbank_metadata.ovrlp(): %f \n", filterbank_metadata.ovrlp());
+
 // deciding how many time samples will be overlapped in each reading.
-  if (nsamples == 2*1024*1024) nsamp_ovrlp_val = 768*1024;	///RD:This needs to be changed for different bands
-  else if(nsamples == 1*1024*1024) nsamp_ovrlp_val = 384*1024;
-  else if(nsamples == 512*1024) nsamp_ovrlp_val = 192*1024;
-  else if(nsamples == 256*1024) nsamp_ovrlp_val = 96*1024;
-  else if(nsamples == 128*1024) nsamp_ovrlp_val = 48*1024;
+  if (filterbank_metadata.ovrlp() > 59){
+      if (nsamples == 2*1024*1024) nsamp_ovrlp_val = 768*1024;	
+      else if(nsamples == 1*1024*1024) nsamp_ovrlp_val = 384*1024;
+      else if(nsamples == 512*1024) nsamp_ovrlp_val = 192*1024;
+      else if(nsamples == 256*1024) nsamp_ovrlp_val = 96*1024;
+      else if(nsamples == 128*1024) nsamp_ovrlp_val = 48*1024;
+  }
+  else{
+      if (nsamples == 2*1024*1024) nsamp_ovrlp_val = 256*1024;	//RD: Updated for band 4 and 5.
+      else if(nsamples == 1*1024*1024) nsamp_ovrlp_val = 128*1024;
+      else if(nsamples == 512*1024) nsamp_ovrlp_val = 64*1024;
+      else if(nsamples == 256*1024) nsamp_ovrlp_val = 32*1024;
+      else if(nsamples == 128*1024) nsamp_ovrlp_val = 16*1024;
+  }
 
   nsamp_ovrlp_pt = nsamples - nsamp_ovrlp_val;
   tsamp_unique = nsamp_ovrlp_pt*tsamp;
@@ -236,9 +212,9 @@ int main(int argc,  char **argv) {
   bool enable_analysis = true;       // The strategy will be optimised to run just dedispersion
   aa_ddtr_strategy ddtr_strategy(ddtr_plan, metadata, free_memory, enable_analysis); //RD : Look into more detail.
 
-// read the timestamp of source.hdr
+// read the timestamp of radec.dat
   result_tmp = timestamp(source_fname);
-  printf("\n first check: timestamp of source.hdr is: %s \n", result_tmp.c_str());
+  printf("\n first check: timestamp of radec.dat is: %s \n", result_tmp.c_str());
 
    
   if(!(ddtr_strategy.ready())) {
@@ -246,18 +222,6 @@ int main(int argc,  char **argv) {
     return 0;
   }
   
-  //Fill input data manually
-  /*std::vector<unsigned short> input_data(nsamples*nchans);
-  
-  for(auto& i : input_data) {
-    i = 0.0;
-  }*/
-  
-
-//  aa_filterbank_metadata filterbank_metadata = filterbank_datafile.read_metadata();  
-  
-  
-//  aa_analysis_plan analysis_plan(ddtr_strategy, sigma_cutoff, sigma_constant, max_boxcar_width_in_sec, algo, false);
   aa_analysis_plan analysis_plan(ddtr_strategy, sigma_cutoff, sigma_constant, max_boxcar_width_in_sec, algo, true);
   aa_analysis_strategy analysis_strategy(analysis_plan); //RD : Look into more detail.
 
@@ -272,11 +236,43 @@ int main(int argc,  char **argv) {
 
   timer_var.Start();  // starting timer for first read
 
-    if(!filterbank_datafile.read_new_signal(buf_count, filterbank_metadata, &f_pos)) {
-//    if(!filterbank_datafile.read_signal()) {
+//---- File name for raw file for 1K@3ms ------Rushikesh edits
+    stream << std::fixed << std::setprecision(6) << filterbank_metadata.src_raj();
+    s_ra = stream.str();
+    stream.str(std::string());
+    stream.clear();
+
+    stream << std::fixed << std::setprecision(6) << filterbank_metadata.src_dej();
+    s_dec = stream.str();
+    stream.str(std::string());
+    stream.clear();
+
+    stream << std::fixed << std::setprecision (ss) <<filterbank_metadata.tstart();
+    s_mjd = stream.str();
+    stream.str(std::string());
+    stream.clear();
+
+    system("pwd > ./pwd.txt");
+    ifstream ifs("./pwd.txt");
+    std::string line, path;
+   
+    while (getline(ifs, line))
+         path += line;
+    printf("Output file path :: %s \n", path.c_str());
+    
+
+    std::string FileNameRaw;
+    std::string FilePath;
+    FileNameRaw = "Rawfile_1K@3ms_" + s_mjd + "_" + s_ra + "_" + s_dec + ".raw";
+    FilePath = path + "/" + FileNameRaw;
+    printf("##### FilePath ::: %s", FilePath.c_str());
+
+//------End------
+
+    if(!filterbank_datafile.read_new_signal(buf_count, filterbank_metadata, &f_pos, new_file_flag, FilePath)) {
       std::cout << "ERROR: Could not read telescope data." << std::endl;
       return 0;
-  }
+    }
   timer_var.Stop();
 
   time_first_read = timer_var.Elapsed() / 1000;
@@ -315,30 +311,44 @@ int main(int argc,  char **argv) {
   
   if(runner.setup()) {
 
-  for (buf_count=0; buf_count < max_buf_count; buf_count++)
+  for (buf_count=0; true ; buf_count++)
   {
 
     printf("\n buf count:: :: %d \n", buf_count);
 
-// read the timestamp of source.hdr
+// read the timestamp of radec.dat
+    if (buf_count==0){
+    printf("\n source_fname:: :: %s \n", source_fname.c_str());  
     result_time_stamp = timestamp(source_fname);
     printf("\n buf_count: %d timestamp is: %s \n", buf_count, result_time_stamp.c_str());
     if(result_tmp != result_time_stamp)
-    {    
-	printf("\n source.hdr has been modified. Time stamps do not match. Will read source information again. \n");
-	// updating metadata from source.hdr file
-        aa_sigproc_input       filterbank_datafile_config(source_fname);
-        aa_filterbank_metadata filterbank_metadata_source = filterbank_datafile_config.read_metadata_source(filterbank_metadata);
-	filterbank_metadata = filterbank_metadata_source;
-	printf("\n filterbank_metadata.src_raj(): %f \n", filterbank_metadata.src_raj());
+        {    
+         	printf("\n radec.dat has been modified. Time stamps do not match. Will read source information again. \n");
+                aa_sigproc_input       filterbank_datafile_config(source_fname);
+                aa_filterbank_metadata filterbank_metadata_source = filterbank_datafile_config.read_metadata_source(filterbank_metadata);
+	        filterbank_metadata = filterbank_metadata_source;
+	        printf("\n filterbank_metadata.src_raj(): %f \n", filterbank_metadata.src_raj());
+                //----Rushikesh edits
+	        new_file_flag = 1;
+		printf(" radec.dat has been changed, creating a new filename\n");
+		FileNameRaw = "Rawfile_1K@3ms_" + s_mjd + "_" + s_ra + "_" + s_dec + ".raw";
+                FilePath = path + FileNameRaw;
+    		printf("##### new FilePath ::: %s", FilePath.c_str());
+		new_file_flag = 1;
+		//-----end---
+        }
+    else	
+        {
+	        printf("\n radec.dat is still the same. Time stamps match \n"); 
+		new_file_flag = 0;
+        }
     }
-    else	printf("\n source.hdr is still the same. Time stamps match \n");
 
 // removing files from previous run and creating directories
 // if test_flg is true, it will create a bcount$ directory for each buffer ($ = buf_count)    
     if (test_flg)
     {
-    stream << buf_count;   //RD(28/09): What for? Converts numbers to strings.
+    stream << buf_count;   
     s_bcount = stream.str();
     stream.str(std::string());
     stream.clear();
@@ -347,43 +357,11 @@ int main(int argc,  char **argv) {
     dir_cmnd = "test/bcount" + s_bcount;
     printf("\n buf count remove command: %s \n", rm_cmnd.c_str());
     printf("\n buf count mkdir command: %s \n", dir_cmnd.c_str());
- 
     sysint2 = system("pwd");
     sysint2 = system("mkdir test/");
     mkdir(dir_cmnd.c_str(), ACCESSPERMS); 
     sysint2 = system(rm_cmnd.c_str());
     }
-
-/*
-    if (buf_count == 0) 	sysint2 = system("rm -rf /test/");
-//    if (buf_count == 0) 	sysint2 = system("pwd");
-//    if (buf_count == 0) 	mkdir("test/bcount0", ACCESSPERMS);
-    if (buf_count == 0) 	mkdir(dir_cmnd.c_str(), ACCESSPERMS);
-//    if (buf_count == 0) 	sysint2 = system("rm ../test/bcount0/global*");
-//    if (buf_count == 0) 	sysint2 = system("rm ./test/bcount0/global*");
-    if (buf_count == 0) 	sysint2 = system(rm_cmnd.c_str());
-
-//    if (buf_count == 1) 	sysint2 = system("mkdir /test/bcount1/");
-    if (buf_count == 1) 	mkdir("test/bcount1", ACCESSPERMS);
-    if (buf_count == 1) 	sysint2 = system("rm ./test/bcount1/global*");
-    if (buf_count == 1) 	sysint2 = system("rm ../test/bcount1/global*");
-
-//    if (buf_count == 2) 	sysint2 = system("mkdir /test/bcount2/");
-    if (buf_count == 2) 	mkdir("test/bcount2", ACCESSPERMS);
-    if (buf_count == 2) 	sysint2 = system("rm ./test/bcount2/global*");
-    if (buf_count == 2) 	sysint2 = system("rm ../test/bcount2/global*");
-
-//    if (buf_count == 3) 	sysint2 = system("mkdir /test/bcount3/");
-    if (buf_count == 3) 	mkdir("test/bcount3", ACCESSPERMS);
-    if (buf_count == 3) 	sysint2 = system("rm ./test/bcount3/global*");
-    if (buf_count == 3) 	sysint2 = system("rm ../test/bcount3/global*");
-
-//    if (buf_count == 4) 	sysint2 = system("mkdir /test/bcount4/");
-    if (buf_count == 4) 	mkdir("test/bcount4", ACCESSPERMS);
-    if (buf_count == 4) 	sysint2 = system("rm ./test/bcount4/global*");
-    if (buf_count == 4) 	sysint2 = system("rm ../test/bcount4/global*");
-//    if (buf_count == 3) 	sysint2 = system("rm -f ../test/bcount3/global*");
-*/
 
     sysint1 = system("rm -f analysed*"); 
     sysint2 = system("rm -f acc*");
@@ -395,15 +373,13 @@ int main(int argc,  char **argv) {
     printf("\n all files removed \n");
 
 
-
 // read only if the buffer number is greater than 0 - because first buffer has been read above already:
     if(buf_count > 0) {
     printf("\n we are here with buf_count: %d \n", buf_count);
 
     timer_var.Start();
     filterbank_datafile.open();
-    if(!filterbank_datafile.read_new_signal(buf_count, filterbank_metadata, &f_pos)) {
-//    if(!filterbank_datafile.read_signal()) {
+    if(!filterbank_datafile.read_new_signal(buf_count, filterbank_metadata, &f_pos, new_file_flag, FilePath)) {
       std::cout << "ERROR: Could not read telescope data." << std::endl;
       return 0;
     }  
@@ -438,17 +414,22 @@ int main(int argc,  char **argv) {
 // creating python output file name
     printf("\n RA: %f DEC: %f MJD: %f \n", filterbank_metadata.src_raj(), filterbank_metadata.src_dej(), filterbank_metadata.tstart());
 
+    stream << new_file_flag;
+    s_new_file_flag = stream.str();
+    stream.str(std::string());
+    stream.clear();
+
     stream << buf_count;
     s_bcount = stream.str();
     stream.str(std::string());
     stream.clear();
 
-    stream << std::fixed << std::setprecision(1) << filterbank_metadata.src_raj();
+    stream << std::fixed << std::setprecision(6) << filterbank_metadata.src_raj();
     s_ra = stream.str();
     stream.str(std::string());
     stream.clear();
 
-    stream << std::fixed << std::setprecision(0) << filterbank_metadata.src_dej();
+    stream << std::fixed << std::setprecision(6) << filterbank_metadata.src_dej();
     s_dec = stream.str();
     stream.str(std::string());
     stream.clear();
@@ -465,16 +446,11 @@ int main(int argc,  char **argv) {
 
     printf("\n After setting precision and string conversion: RA: %s DEC: %s MJD: %s buf_count: %s \n", s_ra.c_str(), s_dec.c_str(), s_mjd.c_str(), s_bcount.c_str());
 
-//    py_fname = "python /home/guest/abhinav/FRB_pipeline/src/pycodes/spsplotii_frb_detect.py global_peaks.dat"; // --bc 0 --ra 2.5 --dec -36 --mjd 55.5";
     py_fname = "python "; // --bc 0 --ra 2.5 --dec -36 --mjd 55.5";
     py_fname += configpath_name;
     py_fname += "spsplotii_frb_detect.py global_peaks.dat";
-    py_fname += " --mjd " + s_mjd + " --ra " + s_ra + " --dec " + s_dec + " --bc " + s_bcount + " --buf_t " + s_tsamp_unique;
+    py_fname += " --mjd " + s_mjd + " --ra " + s_ra + " --dec " + s_dec + " --bc " + s_bcount + " --buf_t " + s_tsamp_unique + " --new_file_flag " + s_new_file_flag;
     printf("\n py_fname: %s \n", py_fname.c_str());
-
-//
-//  } // end of setup condition pushed below---------------------------------------------------------------
-
 
     // writing output files and running python script
     timer_var.Start();
@@ -485,8 +461,38 @@ int main(int argc,  char **argv) {
      sysint4 = system("cat fourier_inter* > global_interbin.dat");
      sysint5 = system("cat harmo* > global_harmonics.dat");
      sysint6 = system("cat candidate* > global_candidates.dat");
-//     sysint = system("python /home/guest/abhinav/FRB_pipeline/src/pycodes/spsplotii_frb_detect.py global_peaks.dat --ls 1.0 --bc 0 --ra 2.5 --dec -36 --mjd 55.5 --auto True > FRB_detection.dat");
      sysint = system(py_fname.c_str());
+
+/*-------RD: To write python output file -------
+     const char * ls_args[2] = { py_fname.c_str(), NULL} ;
+     pid_t c_pid, pid;
+     int status;
+
+     c_pid = fork();
+
+     if (c_pid == 0){
+       /* CHILD */
+
+/*       printf("Child: executing ls\n");
+       execvp( ls_args[0], ls_args);
+                                                                                                                                            
+       perror("execve failed");
+       }else if (c_pid > 0){
+        /* PARENT */
+
+/*        if( (pid = wait(&status)) < 0){
+          perror("wait");
+          _exit(1);
+        }
+
+        printf("Parent: finished\n");
+
+      }else{
+        perror("fork failed");
+        _exit(1);
+      }
+
+//--------End------------------------*/
 
      printf("\nOutput files written\n");
 
@@ -498,20 +504,7 @@ int main(int argc,  char **argv) {
      sysint2 = system(cat_cmnd.c_str());
      }
 
-/*    if (buf_count == 0) 	sysint2 = system("cat peak* > ../test/bcount0/global_peaks.dat");
-    if (buf_count == 1) 	sysint2 = system("cat peak* > ../test/bcount1/global_peaks.dat");
-    if (buf_count == 2) 	sysint2 = system("cat peak* > ../test/bcount2/global_peaks.dat");
-    if (buf_count == 3) 	sysint2 = system("cat peak* > ../test/bcount3/global_peaks.dat");
-    if (buf_count == 4) 	sysint2 = system("cat peak* > ../test/bcount4/global_peaks.dat");
-//    if (buf_count == 3) 	sysint2 = system("cat peak* > ../test/bcount3/global_peaks.dat");
-    if (buf_count == 0) 	sysint2 = system("cat peak* > ./test/bcount0/global_peaks.dat");
-    if (buf_count == 1) 	sysint2 = system("cat peak* > ./test/bcount1/global_peaks.dat");
-    if (buf_count == 2) 	sysint2 = system("cat peak* > ./test/bcount2/global_peaks.dat");
-    if (buf_count == 3) 	sysint2 = system("cat peak* > ./test/bcount3/global_peaks.dat");
-    if (buf_count == 4) 	sysint2 = system("cat peak* > ./test/bcount4/global_peaks.dat");
-*/
-    
-//     runner.cleanup();
+
 
     timer_var.Stop();
     time_conc_files_find_frb = timer_var.Elapsed() / 1000;
@@ -535,9 +528,10 @@ int main(int argc,  char **argv) {
    }
 
 
+  }// buf_count loop ends here ----------------------------------------------------------------------------------
+
   }// setup condition ends here ------------------------------------------------------------------------------
 
-  }// buf_count loop ends here ----------------------------------------------------------------------------------
 
 
   timer_var_total.Stop();
@@ -559,7 +553,7 @@ std::string timestamp(std::string source_fname)
 {
     std::string command_part = "stat -c '%y' ";
     command_part += source_fname;
-// checking the last modified time of source.hdr ---------------------------------------------------
+// checking the last modified time of radec.dat ---------------------------------------------------
     std::string command = "stat -c '%y' ";
     command += source_fname;
 
@@ -569,7 +563,9 @@ std::string timestamp(std::string source_fname)
     std::string result, result_tmp;
 
     std::cout << "Inside timestamp function: Opening reading pipe" << std::endl;
-    FILE* pipe = popen(command.c_str(), "r");
+
+    printf(" command ::::::: %s \n", command.c_str()); 
+    FILE* pipe = popen(command.c_str(), "r"); 
     if (!pipe)
     {
         std::cerr << "Couldn't start command." << std::endl;
@@ -588,3 +584,4 @@ std::string timestamp(std::string source_fname)
 // check complete ----------------------------------------------------------------------------------
 
 }
+

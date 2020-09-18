@@ -5,6 +5,20 @@
 
 #include <string>
 #include <wordexp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <sys/time.h>
+#include <sys/timeb.h>
+#include <string.h>
+#include "externalLibraries.h"
+#include "frb_shm.h"
 
 
 namespace astroaccelerate {
@@ -22,15 +36,36 @@ namespace astroaccelerate {
     }
   printf("\n destructor \n");
   }
-
   /**
    * \brief Method to open the sigproc input file.
    * \returns A boolean flag to indicate whether the operation was successful (true) or not (false).
    */
+
+//----------SHM----------- ////Added by Rushikesh
+DataBuffer *dataBufferReadFRB;
+int	recNumRead;  
+long int currentReadBlock;   
+void initialise()
+{
+	int idDataBuffer;
+	idDataBuffer = shmget(DasBufferKey_SIM,sizeof(DataBuffer),SHM_RDONLY);
+	printf("\nidDataBuffer= %d",idDataBuffer);
+	if(idDataBuffer < 0)
+	{
+		exit(1);
+	}
+	
+	dataBufferReadFRB = (DataBuffer*)shmat(idDataBuffer,0,SHM_RDONLY);
+	printf("\nAttached to shared memory: %d\n",dataBufferReadFRB);
+        printf("Max no of blocks= %d\n",MaxDataBlocks);
+
+}
+//-------end-----
+
   bool aa_sigproc_input::open() {
     fp = fopen(file_path.c_str(), "rb");
     if(fp == NULL) {
-      return false;
+      return true;//false; Rd edits
     }
     printf("\n file opened: %s \n",file_path.c_str());
     isopen = true;
@@ -44,10 +79,10 @@ namespace astroaccelerate {
   bool aa_sigproc_input::close() {
     if(isopen) {
       if(fclose(fp) == -1) {
-	return false;
+	return true;//false; Rd edits
       }
       else {
-	isopen = false;
+	isopen = true;//false; Rd edits
       }
     }
     return true;
@@ -284,42 +319,6 @@ namespace astroaccelerate {
 
 
                 strcpy(*file_name_input, &line[5]);
-//                strcpy(tmp_line, &line[5]);
-
-/*
-	        FILE *fp_test = NULL;      // Path to the input data file
-
-		char tmp_line[80];
-		std::string tmp_fname, fpath_test;
-
-                strcpy(tmp_line, &line[5]);
-		*file_name_input_str = tmp_line;
-		tmp_fname = tmp_line;
-
-		fscanf(fp_test, "%s", tmp_fname);
-
-//		*file_name_input = true;
-
-	    // This command expands "~" to "home/username/"
-	    wordexp_t expanded_string;
-	    wordexp(tmp_line, &expanded_string, 0);
-*/
-//	    if (( fp_test = fopen(expanded_string.we_wordv[0], "rb") ) == NULL)
-/*	    if (( fp_test = fopen("/data/jroy/data/FRB_DM1000_163.84us_4K_7mP_4msW_3sig.header.gpt", "rb") ) == NULL)
-	      {
-		printf("\n Invalid data file!\n");
-		return false;
-	      }
-	    else {
-	      //File is valid
-	      //Close it again for later re-opening
-		printf("\n file opened !!!!!!!!\n");
-	      fpath_test = expanded_string.we_wordv[0];
-	      fclose(fp_test);
-	    }
-	    wordfree(&expanded_string);
-*/
-
 
 		printf("\n line is: ::: %s :: file_name_input is :: %s :: \n", line, *file_name_input);
 		}
@@ -355,7 +354,7 @@ namespace astroaccelerate {
     return true;
   }
 
-  bool aa_sigproc_input::read_new_signal(int buf_count, const aa_filterbank_metadata &filterbank_data, unsigned long int *f_pos) {
+  bool aa_sigproc_input::read_new_signal(int buf_count, const aa_filterbank_metadata &filterbank_data, unsigned long int *f_pos, int new_file_flag, std::string FilePath) {
 /*    printf("\n !isopen: %d !header_is_read: %d data_is_read: %d \n", !isopen, !header_is_read, data_is_read);
     if(!isopen || !header_is_read || data_is_read) {
       return false;
@@ -363,7 +362,7 @@ namespace astroaccelerate {
 */
     printf("\n get recorded data to be called \n");
 //    aa_filterbank_metadata metadata;  
-    if(get_new_recorded_data(m_input_buffer, buf_count, filterbank_data, &f_pos))
+    if(get_new_recorded_data(m_input_buffer, buf_count, filterbank_data, &f_pos, new_file_flag, FilePath))
     {
       return true;
     }
@@ -662,7 +661,7 @@ namespace astroaccelerate {
 //    open("abhinav/FRB_pipeline-1.7.10/input_files/time.hdr");          
 
     FILE * pFile;
-    pFile = fopen("/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/time.hdr", "r");
+    pFile = fopen("/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT.withSHM/input_files/time.hdr", "r");
     if(pFile == NULL) {
       printf("\n ATTENTION:: time.hdr cannot be opened! \n");
     }
@@ -737,30 +736,26 @@ namespace astroaccelerate {
 // hard coded values ::    
     nbits = 8;
     nifs = 1;
-   
-// following should be changed if input file is changed- will be given by the telescope later
-//    src_raj = 214400.0;
-//    src_dej = -393300.0;
 
     FILE * pFile_source;
-    pFile_source = fopen("/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/source.hdr", "r");
+    pFile_source = fopen("/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT.withSHM/input_files/radec.dat", "r");
     if(pFile_source == NULL) {
-      printf("\n ATTENTION:: source.hdr cannot be opened! \n");
+      printf("\n ATTENTION:: radec.dat cannot be opened! \n");
     }
    else {
-   printf("\n File opened :: source.hdr \n");
+   printf("\n File opened :: radec.dat \n");
    while (fgets(line, sizeof(line), pFile_source)) {
         printf("\n ** ** ** %.90s \n", line);
 
-        strcpy(tempo_val, &line[9]);
+        strcpy(tempo_val, &line[10]);
         printf("\n temo_val is :: %s \n", tempo_val);	
 
-	if (strncmp(line, "src_raj", 6) == 0 )              // Time stamp of first sample (MJD) 
+	if (strncmp(line, "RA_MEAN", 6) == 0 )              // Time stamp of first sample (MJD) 
 		{
 		src_raj = strtof(tempo_val, NULL);
 		printf("\n raj: %f :: tempo_val: %s \n", src_raj, tempo_val);
 		}
-	else if (strncmp(line, "src_dej", 6) == 0 )              // Time stamp of first sample (MJD) 
+	else if (strncmp(line, "DEC_MEAN", 7) == 0 )              // Time stamp of first sample (MJD) 
 		{
 		src_dej = strtof(tempo_val, NULL);
 		printf("\n dej: %f :: tempo_val: %s \n", src_dej, tempo_val);
@@ -768,7 +763,7 @@ namespace astroaccelerate {
 	} // while loop ends here
 	} // else condition ends here
 
-   if(!fclose(pFile_source)) printf("\n source.hdr file successfully closed \n");
+   if(!fclose(pFile_source)) printf("\n radec.dat file successfully closed \n");
 
 //--------------------------------------------------------------------edits end----------------------------------------
     
@@ -1016,24 +1011,24 @@ namespace astroaccelerate {
 //    src_dej = -393300.0;
 
     FILE * pFile_source;
-    pFile_source = fopen("/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/source.hdr", "r");
+    pFile_source = fopen("/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/radec.dat", "r");
     if(pFile_source == NULL) {
-      printf("\n ATTENTION:: source.hdr cannot be opened! \n");
+      printf("\n ATTENTION:: radec.dat cannot be opened! \n");
     }
    else {
-   printf("\n File opened :: source.hdr \n");
+   printf("\n File opened :: radec.dat \n");
    while (fgets(line, sizeof(line), pFile_source)) {
         printf("\n ** ** ** %.90s \n", line);
 
-        strcpy(tempo_val, &line[9]);
+        strcpy(tempo_val, &line[10]);
         printf("\n temo_val is :: %s \n", tempo_val);	
 
-	if (strncmp(line, "src_raj", 6) == 0 )              // Time stamp of first sample (MJD) 
+	if (strncmp(line, "RA_MEAN", 6) == 0 )              // Time stamp of first sample (MJD) 
 		{
 		src_raj = strtof(tempo_val, NULL);
 		printf("\n raj: %f :: tempo_val: %s \n", src_raj, tempo_val);
 		}
-	else if (strncmp(line, "src_dej", 6) == 0 )              // Time stamp of first sample (MJD) 
+	else if (strncmp(line, "DEC_MEAN", 7) == 0 )              // Time stamp of first sample (MJD) 
 		{
 		src_dej = strtof(tempo_val, NULL);
 		printf("\n dej: %f :: tempo_val: %s \n", src_dej, tempo_val);
@@ -1041,7 +1036,7 @@ namespace astroaccelerate {
 	} // while loop ends here
 	} // else condition ends here
 
-   if(!fclose(pFile_source)) printf("\n source.hdr file successfully closed \n");
+   if(!fclose(pFile_source)) printf("\n radec.dat file successfully closed \n");
 
 //--------------------------------------------------------------------edits end----------------------------------------
     
@@ -1293,29 +1288,29 @@ namespace astroaccelerate {
 //    src_raj = 214400.0;
 //    src_dej = -393300.0;
 
-    source_file = config_path + "source.hdr";
+    source_file = config_path + "radec.dat";
     printf("\n source file::%s::test\n", source_file.c_str());
 
     FILE * pFile_source;
     pFile_source = fopen(source_file.c_str(), "r");
-    pFile_source = fopen("/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/source.hdr", "r");
+    //pFile_source = fopen("/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/radec.dat", "r");
     if(pFile_source == NULL) {
-      printf("\n ATTENTION:: source.hdr cannot be opened! \n");
+      printf("\n ATTENTION:: radec.dat cannot be opened! \n");
     }
    else {
-   printf("\n File opened :: source.hdr \n");
+   printf("\n File opened :: radec.dat \n");
    while (fgets(line, sizeof(line), pFile_source)) {
         printf("\n ** ** ** %.90s \n", line);
 
-        strcpy(tempo_val, &line[9]);
+        strcpy(tempo_val, &line[10]);
         printf("\n temo_val is :: %s \n", tempo_val);	
 
-	if (strncmp(line, "src_raj", 6) == 0 )              // Time stamp of first sample (MJD) 
+	if (strncmp(line, "RA_MEAN", 6) == 0 )              // Time stamp of first sample (MJD) 
 		{
 		src_raj = strtof(tempo_val, NULL);
 		printf("\n raj: %f :: tempo_val: %s \n", src_raj, tempo_val);
 		}
-	else if (strncmp(line, "src_dej", 6) == 0 )              // Time stamp of first sample (MJD) 
+	else if (strncmp(line, "DEC_MEAN", 7) == 0 )              // Time stamp of first sample (MJD) 
 		{
 		src_dej = strtof(tempo_val, NULL);
 		printf("\n dej: %f :: tempo_val: %s \n", src_dej, tempo_val);
@@ -1323,7 +1318,7 @@ namespace astroaccelerate {
 	} // while loop ends here
 	} // else condition ends here
 
-   if(!fclose(pFile_source)) printf("\n source.hdr file successfully closed \n");
+   if(!fclose(pFile_source)) printf("\n radec.dat file successfully closed \n");
 
 //--------------------------------------------------------------------edits end----------------------------------------
     
@@ -1556,23 +1551,8 @@ namespace astroaccelerate {
     const int nchans = m_meta.nchans();
     const int nbits = m_meta.nbits();
 
-/*    const size_t inputsize = 15000928256;
-    input_buffer.resize(inputsize);
-    int c;
-    
-    unsigned long int total_data;
-    const int nchans = 4096;
-    const int nbits = 8;
-    const int nsamples = 3662336;
-*/
 
-//    aa_filterbank_metadata metadata;
-//    printf("\nnbits:: %lu \n", &metadata.nbits);
 
-//     printf("\n size is:: %zu \n", inputsize);
-//     printf("\n nbits: %ld\n", nbits);
-
-    //{{{ Load in the raw data from the input file and transpose
     if (nbits == 32) {
       // Allocate a tempory buffer to store a line of frequency data
       float *temp_buffer = (float *) malloc(nchans * sizeof(float));
@@ -1753,36 +1733,22 @@ namespace astroaccelerate {
 
 
   template <typename T>
-  bool aa_sigproc_input::get_new_recorded_data(std::vector<T> &input_buffer, int buf_count, const aa_filterbank_metadata filterbank_data, unsigned long int **fp_pos) {
-  printf("\nwe are here in get_new_recorded_data\n");
-/*
-    const size_t inputsize = (size_t)m_meta.nsamples() * (size_t)m_meta.nchans();
-    input_buffer.resize(inputsize);
-    int c;
-    
-    unsigned long int total_data;
-    const int nchans = m_meta.nchans();
-    const int nbits = m_meta.nbits();
-*/
+  bool aa_sigproc_input::get_new_recorded_data(std::vector<T> &input_buffer, int buf_count, const aa_filterbank_metadata filterbank_data, unsigned long int **fp_pos, int new_file_flag, std::string FilePath) {
+    printf("\nwe are here in get_new_recorded_data\n");
+    printf(" new_file_flag :::::: %d\n", new_file_flag);
+    printf(" FilePath :::::: %s\n", FilePath.c_str());
 
     printf("\n get_new_recorded_data::filterbank_data::nchans:: %d \n", filterbank_data.nchans());
 
     int c;
-    
+
     unsigned long int total_data;
-//    const int nchans = 4096;
-//    const int nbits = 8;
-//    const int nsamples = 3662336;
     const int nchans = filterbank_data.nchans();
     const int nbits = filterbank_data.nbits();
     const int nsamples = filterbank_data.nsamples();
     const int nsamp = nsamples;
     const int foff = filterbank_data.foff();
     double tsamp = filterbank_data.tsamp();
-
-//    const size_t inputsize = 15000928256;
-//    const size_t inputsize = 34393296896;
-//    const size_t inputsize = nsamp*nchans;
     const size_t inputsize = (size_t)filterbank_data.nsamples() * (size_t)filterbank_data.nchans();
     input_buffer.resize(inputsize);
 
@@ -1891,94 +1857,139 @@ namespace astroaccelerate {
       free(temp_buffer);
     }
     else if (nbits == 8) {
-
+      
       printf("\n We are here with nbits: %d\n",nbits);
 
-      if (buf_count ==0){
-      fseek(fp, 0, SEEK_SET); // use this with GPT files
-      printf("\n Setting pointer to start of file !!\n");
+      if (buf_count == 0){
+      initialise(); 
+      recNumRead=0;
+      currentReadBlock=0;
+      printf("\n Initialized Shared Memory !!\n Set recNumRead and currentReadBlock to 0 !! \n");
       }
       else {
-      fseek(fp, **fp_pos, SEEK_SET);  // use this with GPT files
-      printf("\n Setting pointer to poisiton: %lu.\n", **fp_pos);
-      printf("\n Setting pointer after %ld time samples.\n", buf_count*nsamp_ovrlp_pt);
+      printf("\n Before entering BCOUNT%d : \n recNumRead :: %d \n currentReadBlock :: %d \n",buf_count,recNumRead,currentReadBlock);
       }
   
       const size_t one_block_SM = (size_t)filterbank_data.nsamples() * (size_t)filterbank_data.nchans() * 0.125; //RD: Each block is 21.474 sec
-      const size_t telescope_time_one_block_SM = nsamp*tsamp/8; 
+      float telescope_time_one_block_SM = nsamp*tsamp/8; 
       printf("\n one_block_SM: %d\n", one_block_SM);
       printf("\n telescope_time_one_block_SM: %f\n", telescope_time_one_block_SM);//RD: Should always be 21.474636648 sec
       printf("\n filterbank_data.nsamples(): %d\n", filterbank_data.nsamples()); 
       printf("\n nsamp  :    %d\n", nsamp);
-      
-      // Allocate a tempory buffer to store 21 sec telescope time-frequency data
-      unsigned char *temp_buffer = (unsigned char *) malloc(one_block_SM * sizeof(unsigned char));
-      //unsigned char *temp_buffer_2 = (unsigned char *) malloc(one_block_SM * sizeof(unsigned char)); //Use to reverse the band.
-         
+   
+      int total_data = 0;
+      std::vector<unsigned char> rawData(DataSize);
+      std::vector<unsigned char> rawData2(DataSize);
+//--- RD: To change the file name if the radec.dat changes
+      if (new_file_flag == 1) printf(" Will write data in new raw file!!!");
+      else printf(" Will ammend data to the previous raw file!!!");
+//------------------------
+        int u=1;
+        while(total_data != 8) {
 
-     total_data = 0;
-     
-      while (!feof(fp)) {
+		if (buf_count == 0 && total_data == 0){
+			currentReadBlock = dataBufferReadFRB->curBlock - 1;
+		        recNumRead = dataBufferReadFRB->curRecord - 1;
+			printf(" Starting to read shared memory from \n currentReadBlock : %d  :::: recNumRead : %d", currentReadBlock, recNumRead);
+		}
+		
+                while(currentReadBlock>=dataBufferReadFRB->curBlock)
+		{
+			usleep(2000000);  // 2 sec
+			printf("\n WAITING!: Buf_count: %d : currentReadBlock %d :: %d", buf_count,currentReadBlock, u);
+		        u++;
+		}
+		printf("\n No. of WAITINGS! :: %d\n\n",u-1);
+		printf("\n dataBuffer->curRecord (Current Write record): %d\n",dataBufferReadFRB->curRecord);
+		printf("\n dataBuffer->curBlock (Current Write block): %d\n",dataBufferReadFRB->curBlock);
+		printf("\n MaxDataBlocks : %d\n",MaxDataBlocks);
+		printf("\n currentReadBlock : %d\n",currentReadBlock);
+		printf("\n recNumRead : %d\n",recNumRead);
 
-	/*f(total_data % (int)(nsamples*0.1) == 0) printf("Reading record %10lu / %10d \t (%2d%% complete)\n", total_data, nsamples, (int)(100.0*((float)total_data/(float)nsamples)));*/
-	//if (fread(temp_buffer, sizeof(unsigned char), one_block_SM, fp) != (size_t)one_block_SM) 
+		while(dataBufferReadFRB->curBlock - currentReadBlock >=MaxDataBlocks-1)
+		{
+		
+			printf("\n Processing lagged behind...\n");
+				
+			printf("\n Realiging...\n");
+			recNumRead = (dataBufferReadFRB->curRecord-1+MaxDataBlocks)%MaxDataBlocks;
+			currentReadBlock = dataBufferReadFRB->curBlock-1;
+		}
 
-        if (memcpy(temp_buffer, dataBuf->temp_buffer+curBlock*one_block_SM, one_block_SM)){
-          printf("\n Number of records read: %d\n", total_data);
-	  break;
-	}
-       
-	  for (c = 0; c < one_block_SM; c++) {
-	    ( input_buffer )[c + total_data * ( one_block_SM )] = (unsigned short) temp_buffer[c];
-            if(c < 3 && total_data == 0) printf("\n #!# %hu \n", ( input_buffer )[c + total_data * ( one_block_SM )]); 
-	  }
-	
-//-----RD: To reverse the band-----
-	  /*int d=0;
- 	  for (int q = 1; q <= 131072; q++) { // 131072 is the number of samples of each block.
-		int s = (q*4096)-1;
-		int a = 0;
-		while (d <= s){
-		  ( temp_buffer_2 ) [d] = (unsigned char) temp_buffer[s-a];
-		  d++;
-		  a++;
-		  } //printf("\n q :: d : %d :: %d\n", q, d);
-	    }
-	  
-	  printf("\n no of times the Temp_buffer ran:: %d\n", d); 
-	  for (c = 0; c < one_block_SM; c++) {
-	    ( input_buffer )[c + total_data * ( one_block_SM )] = (unsigned short) temp_buffer_2[c];
-            if(c < 3) printf("\n #!# %hu \n", ( input_buffer )[c + total_data * ( one_block_SM )]);
-             
-	    }
-	  */
-// ------end ----
-	
-	total_data++;
-	printf("\n Number of data blocks read: %d\n", total_data);
-	
-	if (total_data == 8)
-	{
-	  if (filterbank_data.ovrlp() >= 59) **fp_pos = 5*(buf_count+1)*one_block_SM;	
-          else if(filterbank_data.ovrlp() < 59) **fp_pos = 7*(buf_count+1)*one_block_SM;             
-        printf("\n Setting file pointer after reading data of %ld data blocks. File position: %lu\n", total_data, **fp_pos);
-        printf("\nBreaking after reading %d blocks\n", total_data);
-	break;
-	} 
-      } 
-     
+		memcpy(&rawData[0], dataBufferReadFRB->data+((long)DataSize*(long)recNumRead),DataSize);
+		printf("\n rawData size: %d \n",rawData.size());
+                printf("\n Memcpy done\n");
+
+//-----Converting the input file to 1K@1.3ms------------------------------------------------
+		int a=0;
+		int p=0;
+        	while (p < one_block_SM) //Channel conversion to 1024 channels
+		{	rawData2[a] = rawData[p]/4 + rawData[p+1]/4 + rawData[p+2]/4 + rawData[p+3]/4;
+			a++;
+			p=p+4;
+		} 
+
+		int down_fact=3; //RD: down_fact=1 to downsample by factor of 2 and similarly for more. 
+		int w=1;
+		while(w <= down_fact)
+		{	
+			int q = 0;
+			while(q<(nsamp/(8*((int)pow(2,w-1)))))
+				{	int b=0;
+					while(b<1024){
+					rawData2[b+q*1024/2] = rawData2[b+q*1024]/2 + rawData2[b+(q+1)*1024]/2;
+					b++;
+					}
+				q=q+2;
+			}
+			w++;
+		}
+
+//-----Writing the file----------------------------------------------------------------
+		FILE* pFile;
+		if (buf_count==0 || total_data >= 3 || new_file_flag == 1){  //This is for overlap of band 3. For other bands change the total_data to 1
+        	  printf("Writing raw file!!!\n");
+		  pFile = fopen(FilePath.c_str(),"a");
+		  fwrite (&rawData2[0], sizeof( unsigned char ), (size_t)one_block_SM/(2*2*((int)pow(2,down_fact))), pFile);
+        	  printf("raw file written!!!\n");
+		}
+//-----End-------------------------------------------------------------------------------------------------------------------
+        
+                printf("\n Number of records read: %d\n", total_data);
+	        for (c = 0; c < one_block_SM; c++) {
+	          ( input_buffer )[c + total_data * ( one_block_SM )] = (unsigned short) rawData[c];
+                  if(c < 3 && total_data == 0) printf("\n #!# %hu \n", ( input_buffer )[c + total_data * ( one_block_SM )]);
+		}
+
+		printf("\n 21 sec data written in block : %d\n",currentReadBlock);		
+		recNumRead=(recNumRead+1)%MaxDataBlocks;
+        	total_data++;
+		currentReadBlock++;
+
+	        if (total_data == 8)
+	        {    
+		     if (recNumRead>2){
+	                 if (filterbank_data.ovrlp() >= 59) recNumRead = recNumRead-3;	
+	                 else if(filterbank_data.ovrlp() < 59) recNumRead = recNumRead-1; 
+			 }
+		     else{
+	                 if (filterbank_data.ovrlp() >= 59) recNumRead = recNumRead+13;	
+	                 else if(filterbank_data.ovrlp() < 59) recNumRead = recNumRead+15; 
+			 }
+	             if (filterbank_data.ovrlp() >= 59) currentReadBlock = currentReadBlock-3;	
+          	     else if(filterbank_data.ovrlp() < 59) currentReadBlock = currentReadBlock-1;
+	             break;
+	        }
+      } //While loop ends here!!
+      printf("\n No. of WAITINGS! for buf_count: %d ::: %d\n\n",buf_count,u-1);     
       if (total_data != 8)
 	{
 	printf("\n Not enough data to process \n");
         data_is_read = false;
         return false;
 	}
-
-      free(temp_buffer);
-//      free(temp_buffer_2);
-
-
-    }
+      //fclose(pFile);
+   }
     else if (nbits == 4) {
       // Allocate a temporary buffer to store a line of frequency data
       // each byte stores 2 frequency data
@@ -1986,7 +1997,6 @@ namespace astroaccelerate {
       unsigned char *temp_buffer = (unsigned char *) malloc(nb_bytes * sizeof(unsigned char));
       // Read in the data, transpose it and store it in the input buffer
       total_data = 0;
-      // 00001111
       char mask = 0x0f;
       while (!feof(fp)) {
 	if(total_data % (int)(m_meta.nsamples()*0.1) == 0) printf("Reading record %10lu / %10d \t (%2d%% complete)\n", total_data, m_meta.nsamples(), (int)(100.0*((float)total_data/(float)m_meta.nsamples())));
@@ -2065,18 +2075,4 @@ namespace astroaccelerate {
 
 } //namespace astroaccelerate
 
-void initialise () {
 
-  shmHId = shmget( DasHeaderKey, sizeof( DataHeader ), SHM_RDONLY ); /*shmget() returns an identifier for the shared memory segment
-                                 associated with DasHeaderKey. Here, in place of data header we can use the 'one_block_sm'*/
-  shmBId = shmget( DasBufferKey, sizeof( DataBufferIA ), SHM_RDONLY );
-  printf(shmHID, shmBID)
-
-  if( shmHId < 0 || shmBId < 0 ) {
-    fprintf(stderr, "Error in attaching shared memory..\n");
-    exit(-1);
-  }
-
-  dataHdr = (DataHeader *) shmat( shmHId, 0, 0 ); /*shmat(). void *shmat(int shmid ,void *shmaddr ,int shmflg) is used to attach shared the memory to the dataHdr; where, shmid is shared memory id. shmaddr specifies specific address to use but we should set it to zero and OS will automatically choose the address.*/
-  dataBuf = (DataBufferIA *) shmat( shmBId, 0, 0 ); /*shmat attaches a shared memory segment with identifies shmBID to dataBuf*/
-}
