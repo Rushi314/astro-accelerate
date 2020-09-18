@@ -9,16 +9,15 @@ namespace astroaccelerate {
   /** \class aa_analysis_plan aa_analysis_plan.hpp "include/aa_analysis_plan.hpp"
    * \brief Class to set an aa_analysis_plan.
    * \details An analysis plan is required in order to create an analsyis strategy.   
-   * \author AstroAccelerate.
-   * \date 14 August 2019.
+   * \author Cees Carels.
+   * \date 23 October 2018.
    */
   class aa_analysis_plan {
   public:
 
     enum class selectable_candidate_algorithm : int {
-		peak_find = 0,
-		threshold = 1,
-		peak_filtering = 2
+      off = 0,
+	on			  
 	};
     
     /** \brief Trivial constructor for aa_analysis_plan.

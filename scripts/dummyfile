@@ -1,0 +1,950 @@
+=== Running astro-accelerate.sh script ===
+/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/
+The executable path is  /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/
+The input_file path is  /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/GMRT.SPS.10m.txt
+The job name is  GMRT.SPS.10m
+The output directory path is  /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/output/GMRT.SPS.10m
+NOTICE   Calculating strategy.
+DEBUG    mmMaximum number of dm trials in any of the range steps: 1512
+DEBUG    Range:	6 MAXSHIFT:	181632 Scrunch value:	8
+DEBUG    Maximum dispersive delay:	 59.517174(s).
+DEBUG    Diagonal DM:	25.867702
+DEBUG    In 2
+NOTICE   No card has yet been selected. Defaulting to card with ID 0 and proceeding.
+NOTICE   Detected 1 CUDA Capable device(s)
+NOTICE   Device info 0 free 12318408704 (TITAN V)
+Initial precision = 6
+argv[1] = /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/GMRT.SPS.10m.txt
+ constructor 
+
+ file opened: /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/GMRT.SPS.10m.txt 
+
+ will read input metadata 
+
+ low : 0.000000 high : 150.000000 step : 0.100000 inBin : 1 outBin : 1 
+
+ low : 150.000000 high : 300.000000 step : 0.200000 inBin : 2 outBin : 2 
+
+ low : 300.000000 high : 500.000000 step : 0.250000 inBin : 2 outBin : 2 
+
+ low : 500.000000 high : 900.000000 step : 0.400000 inBin : 4 outBin : 4 
+
+ low : 900.000000 high : 1200.000000 step : 0.600000 inBin : 4 outBin : 4 
+
+ low : 1200.000000 high : 1500.000000 step : 0.800000 inBin : 8 outBin : 8 
+
+ low : 1500.000000 high : 2000.000000 step : 1.000000 inBin : 8 outBin : 8 
+
+ sigma_cutoff :  ::: 6.000000 
+
+ sigma_constant_input :  ::: 3.000000 
+
+ max_boxcar_width_in_sec : :::0.500000 
+
+ periodicity_sigma_cutoff_input: ::: 20.000000 
+
+ periodicity_harmonics_input: ::: 32.000000 
+
+ baselinenoise_val: ::: 1 
+
+ line is: ::: file /data/jroy/data/FRB_samples/FRB_band3_DM1000_327.68us_2K_7mP_1msW_10sig.raw
+ :: file_name_input is :: /data/jroy/data/FRB_samples/FRB_band3_DM1000_327.68us_2K_7mP_1msW_10sig.raw
+ :: 
+
+ config path line is: ::: config_file_path /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/
+ 
+
+ ddtr_plan.user_dm(ddtr_plan.range()-1).high: 2000.000000 
+
+ file_name_input :: /data/jroy/data/FRB_samples/FRB_band3_DM1000_327.68us_2K_7mP_1msW_10sig.raw
+ 
+
+baselinenoise_val: is: 1 
+
+ fname_input::/data/jroy/data/FRB_samples/FRB_band3_DM1000_327.68us_2K_7mP_1msW_10sig.raw
+::test
+
+ fname_input::/data/jroy/data/FRB_samples/FRB_band3_DM1000_327.68us_2K_7mP_1msW_10sig.raw::test
+
+ constructor 
+
+ file opened: /data/jroy/data/FRB_samples/FRB_band3_DM1000_327.68us_2K_7mP_1msW_10sig.raw 
+
+ configpath_name::/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/
+::test
+
+ configpath_name::/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/::test
+
+ constructor 
+
+ file opened: /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/gpu.hdr 
+
+ will read metadata 
+
+ time file::/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/time.hdr::test
+
+ File opened :: pFILE 
+
+ **-*-** Time stamp of first sample (MJD) : 58017.599681826483
+ 
+
+ temo_val is :: 58017.599681826483
+ 
+
+ Time stamp of first sample:: 58017.599681826483
+ :: tstart:: 58017.599681826 
+
+ Channel bandwidth size: 200.000000 
+
+ Number of channels: 2048 
+
+ Frequency of channel 1 (MHz): 500.000000 
+
+ Channel bandwidth sign: -1.000000 
+
+ Beam Integration, i.e. Number of FFT cycles: 32 
+
+ ** Time resolution ::  0.000327680 
+
+ ** Channel Bandwith (foff): -0.09765625 
+
+ fch1 is : 499.95117188 
+
+ source file::/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/source.hdr::test
+
+ File opened :: source.hdr 
+
+ ** ** ** src_raj: 214400.0
+ 
+
+ temo_val is :: 214400.0
+ 
+
+ raj: 214400.000000 :: tempo_val: 214400.0
+ 
+
+ ** ** ** src_dej: -393300.0
+ 
+
+ temo_val is :: -393300.0
+ 
+
+ dej: -393300.000000 :: tempo_val: -393300.0
+ 
+
+ source.hdr file successfully closed 
+
+ nsamp is: 524288 	 tsamp:  0.000327680 
+
+ low freq: 300.000000 high freq: 500.000000  max_dm_val: 2000.000000 
+
+ ovrlp:: 59.022221 
+
+ filterbank_metadata.ovrlp(): 59.022221 
+
+ number of time samples to be processed only once (without overlap): 327680 
+
+ amount of telescope time to be processed only once (without overlap): 107.374184 
+
+ 1. in aa_ddtr_strategy.cpp :: m_metadata.strat(): 0 
+
+ range:: >> 7 
+
+ gpu_memory -884901888
+
+ 2. aa_ddtr_Strategy.cpp:: max_tsamps:: 713266 m_maxshift:: 181632 m_max_ndms:: 1512
+
+NOTICE: Maxshift memory needed:	709 MB.
+NOTICE: Output memory needed:	1419 MB.
+Inside timestamp function: Opening reading pipe
+Reading timestamp
+2019-09-27 20:32:00.297015107 +0530
+
+0
+
+ first check: timestamp of source.hdr is: 2019-09-27 20:32:00.297015107 +0530
+ 
+
+----------------------- MSD info ---------------------------
+  Memory required by boxcar filters:10817.297 MB
+  Memory available:5623.250 MB 
+  Max samples: :215445567
+
+  DMs_per_cycle: 628
+  Size MSD: 1024 	Size workarea: 983.870117, int: 1525
+------------------------------------------------------------
+
+ get recorded data to be called 
+
+we are here in get_new_recorded_data
+
+ get_new_recorded_data::filterbank_data::nchans:: 2048 
+
+ get_new_recorded_data::::::nchans:: 2048 
+
+ get_new_recorded_data::::::nbits:: 8 
+
+ get_new_recorded_data::::::nsamp:: 524288 
+
+ get_new_recorded_data::::::inputsize:: 1073741824 
+
+ ovralp is greater than 59 seconds. buf_count is 0 
+
+ buf count::nsamp_ovrlp_val:: 196608 
+
+ Number of time samples: 524288 
+
+ Time samples overlap between subsequent readings: 196608
+
+ Overlapped data beigns after first 327680 samples 
+
+ Number of blocks 64 to be read at a time 
+
+ We are here with nbits: 8
+
+ Setting pointer to start of file !!
+
+ one_block_SM: 134217728
+
+ telescope_time_one_block_SM: 21
+
+ filterbank_data.nsamples(): 524288
+
+ nsamp  :    524288
+
+ #!# 143 
+
+ #!# 142 
+
+ #!# 128 
+
+ Number of data blocks read: 1
+
+ Number of data blocks read: 2
+
+ Number of data blocks read: 3
+
+ Number of data blocks read: 4
+
+ Number of data blocks read: 5
+
+ Number of data blocks read: 6
+
+ Setting file pointer after reading data of 6 data blocks. File position: 671088640
+
+ Number of data blocks read: 7
+
+ Number of data blocks read: 8
+
+Breaking after reading 8 blocks
+
+
+ === First buffer read ===
+
+ m_ddtr_strategy.metadata().nsamp(): : : 524288 
+
+ m_ddtr_strategy.metadata().nchans(): : : 2048 
+
+ m_ddtr_strategy.metadata().tsamp(): : : -875796408 
+
+
+
+522624
+
+
+
+ buf count:: :: 0 
+Inside timestamp function: Opening reading pipe
+Reading timestamp
+2019-09-27 20:32:00.297015107 +0530
+
+0
+/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/output/GMRT.SPS.10m
+mkdir: cannot create directory ‘test/’: File exists
+
+ buf_count: 0 timestamp is: 2019-09-27 20:32:00.297015107 +0530
+ 
+
+ source.hdr is still the same. Time stamps match 
+
+ buf count remove command: rm ./test/bcount0/global* 
+
+ buf count mkdir command: test/bcount0 
+
+ all files removed 
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+ time is: > : 0 
+
+NOTICE: t_processed:	340992, 0
+ ## 143 ##
+
+CORNER TURN!
+522624 2048 256
+32 1
+522624 1
+Performed ZDM: 0.010000 (GPU estimate)
+CORNER TURN!
+522624 2048
+32 8
+16332 256
+Performed CT: 0.050000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 214.066790
+CT Device memory bandwidth in GB/s: 128.440074
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 0.000000
+
+305.175781
+0.029484
+273
+lineshift:	561
+Using fast shared memory kernel
+ #$# 126.661133 
+
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:340992; inBin:1; maxshift:181632; 
+  SPS will run 3 batches each containing 628 DM trials. Remainder 256 DM trials
+  Selected iteration:8; maximum boxcar width requested:1525; maximum boxcar width performed:2176;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 32 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:114.859009 ms
+  MSD_time: 53.235710 ms; SPDT time: 34.693120 ms; Candidate selection time: 4.419584 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 0.000000
+
+305.175781
+0.029484
+273
+lineshift:	561
+Using fast shared memory kernel
+ #$# 126.661133 
+
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:170496; inBin:2; maxshift:90816; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:5; maximum boxcar width requested:381; maximum boxcar width performed:384;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:29.562208 ms
+  MSD_time: 14.682112 ms; SPDT time: 8.450048 ms; Candidate selection time: 6.322176 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 0.000000
+
+381.469727
+0.029484
+318
+lineshift:	606
+Using fast shared memory kernel
+ #$# 126.661133 
+
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:170496; inBin:2; maxshift:90816; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:5; maximum boxcar width requested:381; maximum boxcar width performed:384;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 2 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:49.715038 ms
+  MSD_time: 33.215488 ms; SPDT time: 9.147392 ms; Candidate selection time: 6.857728 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 0.000000
+
+305.175781
+0.029484
+273
+lineshift:	561
+Using fast shared memory kernel
+ #$# 126.661133 
+
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:85248; inBin:4; maxshift:45408; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:3; maximum boxcar width requested:95; maximum boxcar width performed:128;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 2 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:19.794304 ms
+  MSD_time: 10.429440 ms; SPDT time: 5.126144 ms; Candidate selection time: 3.808256 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 0.000000
+
+457.763702
+0.029484
+363
+lineshift:	651
+Using fast shared memory kernel
+ #$# 126.661133 
+
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:85248; inBin:4; maxshift:45408; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:3; maximum boxcar width requested:95; maximum boxcar width performed:128;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 4 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:10.739392 ms
+  MSD_time: 5.833728 ms; SPDT time: 2.576384NOTICE   Pipeline running over next chunk.
+ ms; Candidate selection time: 1.911808 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 0.000000
+
+305.175781
+0.029484
+273
+lineshift:	561
+Using fast shared memory kernel
+ #$# 126.661133 
+
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:42624; inBin:8; maxshift:22704; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:1; maximum boxcar width requested:23; maximum boxcar width performed:32;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:4.169472 ms
+  MSD_time: 2.755584 ms; SPDT time: 0.584704 ms; Candidate selection time: 0.413696 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 0.000000
+
+381.469727
+0.029484
+318
+lineshift:	606
+Using fast shared memory kernel
+ #$# 126.661133 
+
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:42624; inBin:8; maxshift:22704; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:1; maximum boxcar width requested:23; maximum boxcar width performed:32;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.724000 ms
+  MSD_time: 3.306496 ms; SPDT time: 0.774144 ms; Candidate selection time: 0.549888 ms;
+----------<
+
+
+NOTICE: INC:	340992
+NOTICE: Pipeline ended run_pipeline_2 over chunk 1 / 1.
+ dm_low 0 dm_high 151.2
+ dm_low 0 dm_high 0
+ dm_low 302.4 dm_high 507.15
+ dm_low 507.15 dm_high 910.35
+ dm_low 910.35 dm_high 1212.75
+ dm_low 1212.75 dm_high 1515.15
+ dm_low 0 dm_high 0
+cat: analysed*: No such file or directory
+cat: fourier-*: No such file or directory
+cat: fourier_inter*: No such file or directory
+cat: harmo*: No such file or directory
+cat: candidate*: No such file or directory
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+ time is: > : 1 
+
+ count_bf_count :: 1 
+
+
+ === OVERALL DEDISPERSION THROUGHPUT INCLUDING SYNCS AND DATA TRANSFERS ===
+
+(Performed Brute-Force Dedispersion: 5.13971 (GPU estimate)
+Amount of telescope time processed: 111.736259
+Amount of telescope time read: 171.798691
+Number of samples processed: 340992
+Real-time speedup factor: 21.739799
+
+
+ === Buffer processed ===
+
+ RA: 214400.000000 DEC: -393300.000000 MJD: 58017.599682 
+
+ After setting precision and string conversion: RA: 214400.0 DEC: -393300 MJD: 58017.599682 buf_count: 0 
+
+ py_fname: python /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/spsplotii_frb_detect.py global_peaks.dat --mjd 58017.599682 --ra 214400.0 --dec -393300 --bc 0 --buf_t 107.374184 
+
+Output files written
+
+ Concatenation command:: cat peak* > ./test/bcount0/global_peaks.dat 
+
+
+ === Output files created | Concatenated | Python script ran ===
+
+--------------------- Timing information after processing first buffer ---------------------
+
+ Time to read first buffer: 1.848865 (GPU estimate) 
+
+ Time to process buffer number 0: 5.139745 (GPU estimate) 
+
+ Time to concatenate files and run python script for buffer number 0: 1.278611 (GPU estimate) 
+
+--------------------------------------------------------------------------------------------
+
+ buf count:: :: 1 
+Inside timestamp function: Opening reading pipe
+Reading timestamp
+2019-09-27 20:32:00.297015107 +0530
+
+0
+/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/output/GMRT.SPS.10m
+mkdir: cannot create directory ‘test/’: File exists
+
+ buf_count: 1 timestamp is: 2019-09-27 20:32:00.297015107 +0530
+ 
+
+ source.hdr is still the same. Time stamps match 
+
+ buf count remove command: rm ./test/bcount1/global* 
+
+ buf count mkdir command: test/bcount1 
+
+ all files removed 
+
+ we are here with buf_count: 1 
+
+ file opened: /data/jroy/data/FRB_samples/FRB_band3_DM1000_327.68us_2K_7mP_1msW_10sig.raw 
+
+ get recorded data to be called 
+
+we are here in get_new_recorded_data
+
+ get_new_recorded_data::filterbank_data::nchans:: 2048 
+
+ get_new_recorded_data::::::nchans:: 2048 
+
+ get_new_recorded_data::::::nbits:: 8 
+
+ get_new_recorded_data::::::nsamp:: 524288 
+
+ get_new_recorded_data::::::inputsize:: 1073741824 
+
+ buf count::nsamp_ovrlp_val:: 196608 
+
+ Number of time samples: 524288 
+
+ Time samples overlap between subsequent readings: 196608
+
+ Overlapped data beigns after first 327680 samples 
+
+ Number of blocks 64 to be read at a time 
+
+ We are here with nbits: 8
+
+ Setting pointer to poisiton: 671088640.
+
+ Setting pointer after 327680 time samples.
+
+ one_block_SM: 134217728
+
+ telescope_time_one_block_SM: 21
+
+ filterbank_data.nsamples(): 524288
+
+ nsamp  :    524288
+
+ #!# 159 
+
+ #!# 108 
+
+ #!# 67 
+
+ Number of data blocks read: 1
+
+ Number of data blocks read: 2
+
+ Number of data blocks read: 3
+
+ Number of data blocks read: 4
+
+ Number of data blocks read: 5
+
+ Number of data blocks read: 6
+
+ Setting file pointer after reading data of 6 data blocks. File position: 1342177280
+
+ Number of data blocks read: 7
+
+ Number of data blocks read: 8
+
+Breaking after reading 8 blocks
+
+
+ === Next buffer read ===
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+ time is: > : 0 
+
+NOTICE: t_processed:	340992, 0
+ ## 159 ##
+
+CORNER TURN!
+522624 2048 256
+32 1
+522624 1
+Performed ZDM: 0.010000 (GPU estimate)
+CORNER TURN!
+522624 2048
+32 8
+16332 256
+Performed CT: 0.050000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 214.066790
+CT Device memory bandwidth in GB/s: 128.440074
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 111.736259
+
+305.175781
+0.029484
+273
+lineshift:	561
+Using fast shared memory kernel
+ #$# 127.209961 
+
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:340992; inBin:1; maxshift:181632; 
+  SPS will run 3 batches each containing 628 DM trials. Remainder 256 DM trials
+  Selected iteration:8; maximum boxcar width requested:1525; maximum boxcar width performed:2176;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 10 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:114.804131 ms
+  MSD_time: 53.202976 ms; SPDT time: 34.671616 ms; Candidate selection time: 4.419584 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 111.736259
+
+305.175781
+0.029484
+273
+lineshift:	561
+Using fast shared memory kernel
+ #$# 127.209961 
+
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:170496; inBin:2; maxshift:90816; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:5; maximum boxcar width requested:381; maximum boxcar width performed:384;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 3 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:29.904415 ms
+  MSD_time: 14.650368 ms; SPDT time: 8.449024 ms; Candidate selection time: 6.322176 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 111.736259
+
+381.469727
+0.029484
+318
+lineshift:	606
+Using fast shared memory kernel
+ #$# 127.209961 
+
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:170496; inBin:2; maxshift:90816; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:5; maximum boxcar width requested:381; maximum boxcar width performed:384;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 3 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:49.658146 ms
+  MSD_time: 33.181698 ms; SPDT time: 9.146368 ms; Candidate selection time: 6.857696 ms;
+----------<
+
+
+
+NONOTICE   Pipeline running over next chunk.
+TICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 111.736259
+
+305.175781
+0.029484
+273
+lineshift:	561
+Using fast shared memory kernel
+ #$# 127.209961 
+
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:85248; inBin:4; maxshift:45408; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:3; maximum boxcar width requested:95; maximum boxcar width performed:128;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 4 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:19.755873 ms
+  MSD_time: 10.390528 ms; SPDT time: 5.127168 ms; Candidate selection time: 3.808256 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 111.736259
+
+457.763702
+0.029484
+363
+lineshift:	651
+Using fast shared memory kernel
+ #$# 127.209961 
+
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:85248; inBin:4; maxshift:45408; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:3; maximum boxcar width requested:95; maximum boxcar width performed:128;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 58 dump_to_disk == 1 
+
+ 
+
+  TOTAL TIME OF SPS:10.740224 ms
+  MSD_time: 5.805056 ms; SPDT time: 2.572288 ms; Candidate selection time: 1.911808 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 111.736259
+
+305.175781
+0.029484
+273
+lineshift:	561
+Using fast shared memory kernel
+ #$# 127.209961 
+
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:42624; inBin:8; maxshift:22704; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:1; maximum boxcar width requested:23; maximum boxcar width performed:32;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:3.822368 ms
+  MSD_time: 2.733056 ms; SPDT time: 0.582656 ms; Candidate selection time: 0.412672 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 111.736259
+
+381.469727
+0.029484
+318
+lineshift:	606
+Using fast shared memory kernel
+ #$# 127.209961 
+
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:42624; inBin:8; maxshift:22704; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:1; maximum boxcar width requested:23; maximum boxcar width performed:32;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.711424 ms
+  MSD_time: 3.287040 ms; SPDT time: 0.772096 ms; Candidate selection time: 0.548864 ms;
+----------<
+
+
+NOTICE: INC:	340992
+NOTICE: Pipeline ended run_pipeline_2 over chunk 1 / 1.
+ dm_low 0 dm_high 151.2
+ dm_low 151.2 dm_high 302.4
+ dm_low 302.4 dm_high 507.15
+ dm_low 507.15 dm_high 910.35
+ dm_low 910.35 dm_high 1212.75
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+cat: analysed*: No such file or directory
+cat: fourier-*: No such file or directory
+cat: fourier_inter*: No such file or directory
+cat: harmo*: No such file or directory
+cat: candidate*: No such file or directory
+('telescope time in each buffer (unique): ', 107.374184)
+('telescope time (upto previous buffer): ', 107.374184)
+('buf_count: ', 1, ' mjd: ', 58017.599682, ' ra: ', 214400.0, ' dec: ', -393300)
+('RA (HH:MM:SS)', 21, 44, 0.0)
+('DEC (HH:MM:SS)', 39, 33, 0)
+('RA and DEC in degrees: ', 326.0, -39.55)
+('ls: ', 0.0, ' auto: ', 'True', ' ld range: ', array([  10, 2000]))
+('step = ', 1, 'out of ', 1)
+('#FRB found! DM: ', 999.75, ' Time: ', 214.36171, ' Width: ', 4.5875196, ' SNR: ', 41.362274)
+('frb time:: ', 321.73589359472658)
+('Name of FRB detection file: ', 'FRB_detection_58017.599682_326.0_-39.55_321.736.txt')
+('--- seconds --- ', 0.009128093719482422)
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+ time is: > : 1 
+
+ count_bf_count :: 2 
+
+
+ === OVERALL DEDISPERSION THROUGHPUT INCLUDING SYNCS AND DATA TRANSFERS ===
+
+(Performed Brute-Force Dedispersion: 4.19623 (GPU estimate)
+Amount of telescope time processed: 111.736259
+Amount of telescope time read: 171.798691
+Number of samples processed: 340992
+Real-time speedup factor: 26.627798
+
+
+ === Buffer processed ===
+
+ RA: 214400.000000 DEC: -393300.000000 MJD: 58017.599682 
+
+ After setting precision and string conversion: RA: 214400.0 DEC: -393300 MJD: 58017.599682 buf_count: 1 
+
+ py_fname: python /home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/input_files/spsplotii_frb_detect.py global_peaks.dat --mjd 58017.599682 --ra 214400.0 --dec -393300 --bc 1 --buf_t 107.374184 
+
+Output files written
+
+ Concatenation command:: cat peak* > ./test/bcount1/global_peaks.dat 
+
+
+ === Output files created | Concatenated | Python script ran ===
+
+--------------------- Timing information after processing new buffer ---------------------
+
+ Time to read buffer number 1: 1.348965 (GPU estimate) 
+
+ Time to process buffer number 1: 4.196241 (GPU estimate) 
+
+ Time to concatenate files and run python script for buffer number 1: 1.435045 (GPU estimate) 
+
+-------------------------------------------------------------------------------------------
+
+ buf count:: :: 2 
+Inside timestamp function: Opening reading pipe
+Reading timestamp
+2019-09-27 20:32:00.297015107 +0530
+
+0
+/home/guest/Rushikesh/FRB_pipeline-1.7.10.GMRT300-500/output/GMRT.SPS.10m
+mkdir: cannot create directory ‘test/’: File exists
+
+real	0m23.060s
+user	0m7.866s
+sys	0m15.031s

@@ -1,0 +1,2 @@
+g++ -std=c++11 -I/home/guest/abhinav/FRB_pipeline-1.7.10/include/ -L/home/guest/abhinav/FRB_pipeline-1.7.10/build -Wl,-rpath,/home/guest/abhinav/FRB_pipeline-1.7.10/build -lastroaccelerate -I/usr/local/cuda/include/ -L/usr/local/cuda/lib64 -Wl,-rpath,/usr/local/cuda/lib64 -I/usr/local/cuda-8.0/samples/common/inc/ -lcudart dedispersion.cpp -o test1
+

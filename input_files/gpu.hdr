@@ -1,0 +1,49 @@
+{ Corrsel.def
+GPU_MODE    = 0                  /* 0 - Realtime, 1 - RawDump          */
+GPU_LTA     = 4                  /* LTA values can be : 1,2,4,8,16,32 etc.  */
+GPU_ACQ_BW  = 200.0000      	 /* 100 MHz, 200 MHz, and 400 MHz etc.  */
+GPU_FINAL_BW= 1.0               /* 1,2,4,8,16,32,64 As divisor of ACQ_BW, Val = 200.0000 */
+GPU_EDGE_FRQ= 0.000000      	 /* Freq Entry in steps of Nyq, Val = 0 */
+GPU_CHAN_MAX= 4096         	 /* 1024, 2048, 4096, 8192 and 16384.  */
+GPU_CHAN_NUM= 0:4095:1      	 /* any range i:j:1;for i,j<chan_max   */
+GPU_STOKES  = 2                  /* 1-SinglePolUSB130, 2-Total_Intensity, 4-Full_Stokes    */
+GPU_RF      = 1460  1460    		 /* Any RF value from 100 MHz to 1500 MHz........  */
+GPU_LO-1    = 540  540   		 /* are in respective values of GWB RF  */
+GPU_DDC     = 0                  /* 1 - ON, 0 - OFF                    */
+GPU_DDCLO   = 0.0000  0.0000        /* are in respective values of GWB RF  */
+GPU_SIDEBAND= 1 1             /* 1 : LSB (LO > RF) and -1 : USB (LO < RF)  */
+GPU_RF1     = 1460  1460     	 /* zeroth channel RF frequency for subarray.      */
+GPU_DDCLO1  = 0.0000  0.0000        /* are in respective values of GWB RF  */
+GPU_SB1     = 1 1             /* 1 : LSB (LO > RF) and -1 : USB (LO < RF)  */
+GCODE1      = SUBA1                  /* GTAC CODE associated with given subarray. */
+GPU_RF2     = 1460  1460              /* zeroth channel RF frequency for subarray.      */
+GPU_DDCLO2  = 0.0000  0.0000        /* are in respective values of GWB RF  */
+GPU_SB2     = 1 1             /* 1 : LSB (LO > RF) and -1 : USB (LO < RF)  */
+GCODE2      = TEST2                  /* GTAC CODE associated with given subarray. */
+GPU_RF3     = 1460  1460              /* zeroth channel RF frequency for subarray.      */
+GPU_DDCLO3  = 0.0000  0.0000        /* are in respective values of GWB RF  */
+GPU_SB3     = 1 1             /* 1 : LSB (LO > RF) and -1 : USB (LO < RF)  */
+GCODE3      = SUBA3                  /* GTAC CODE associated with given subarray. */
+GPU_RF4     = 750  750              /* zeroth channel RF frequency for subarray.      */
+GPU_DDCLO4  = 0.0000  0.0000        /* are in respective values of GWB RF  */
+GPU_SB4     = 1 1             /* 1 : LSB (LO > RF) and -1 : USB (LO < RF)  */
+GCODE4      = FRB                  /* GTAC CODE associated with given subarray. */
+GPU_RF5     = 0  0              /* zeroth channel RF frequency for subarray.      */
+GPU_DDCLO5  = 0.0000  0.0000        /* are in respective values of GWB RF  */
+GPU_SB5     = 1 1             /* 1 : LSB (LO > RF) and -1 : USB (LO < RF)  */
+GCODE5      = GPU5      		 /* GTAC CODE associated with given subarray. */
+GPU_CNTRL   = 1              /* 0 -LOCAL, 1 -ONLINE, 2 -MANUAL     */
+GPU_FSTOP   = 1              /* 1 - ON, 0 - OFF                    */
+GPU_BEAM_1  = 0:1           /* 0-OFF,1-IA,2-PA,3-Voltage */
+GPU_BEAM_2  = 0:1           /* 0-OFF,1-IA,2-PA,3-Voltage */
+GPU_BEAM_3  = 1:1           /* 0-OFF,1-IA,2-PA,3-Voltage */
+GPU_BEAM_4  = 1:1           /* 0-OFF,1-IA,2-PA,3-Voltage */
+GPU_BM_INT  = 8              /* BEAM INTEGRATION (No. OF FFT CYCLES) i.e. 128 
+GPU_GAINEQ  = 0              /* 1 - ON, 0 - OFF                    */
+GPU_TPA     = 1              /* 0 - From online tpa, 1 - From GWB GUI. */
+GPU_BITS    = 8              /* 4 - 4 Bits , 8 - 8 Bits          */
+GPU_FILRFI  = 0              /* 0 - RFI Filterring OFF, 1 - Voltage Detection, 2 - Power Detection */
+GPU_BEAM_S  = 0              /* 1 - ON, 0 - OFF                    */
+}Corrsel
+*
+END_OF_HEADER			/*  VERSION RELEASED 4.5 */

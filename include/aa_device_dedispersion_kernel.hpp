@@ -17,26 +17,12 @@ namespace astroaccelerate {
 
   /** \brief Kernel wrapper function for shared_dedisperse_kernel kernel function. */
   void call_kernel_shared_dedisperse_kernel(const dim3 &block_size, const dim3 &grid_size, const int &bin, unsigned short *const d_input, float *const d_output, const float &mstartdm, const float &mdmstep);
-  
-	/** \brief Kernel wrapper function for dedispersion GPU kernel which works with number of channels greater then 8192. */
-	void call_kernel_shared_dedisperse_kernel_nchan8192p(const dim3 &block_size, const dim3 &grid_size, const int &bin, unsigned short *const d_input, float *const d_output, float *const d_dm_shifts, const float &mstartdm, const float &mdmstep);
 
   /** \brief Kernel wrapper function for shared_dedisperse_kernel_16 kernel function. */
   void call_kernel_shared_dedisperse_kernel_16(const dim3 &block_size, const dim3 &grid_size, const int &bin, unsigned short *const d_input, float *const d_output, const float &mstartdm, const float &mdmstep);
-  
-	/** \brief Kernel wrapper function for dedispersion kernel which works with 16bit data and when number of channels is greater than 8192 kernel function. */
-	void call_kernel_shared_dedisperse_kernel_16_nchan8192p(const dim3 &block_size, const dim3 &grid_size, const int &bin, unsigned short *const d_input, float *const d_output, float *const d_dm_shifts, const float &mstartdm, const float &mdmstep);
 
   /** \brief Kernel wrapper function for cache_dedisperse_kernel kernel function. */
   void call_kernel_cache_dedisperse_kernel(const dim3 &block_size, const dim3 &grid_size, const int &bin, unsigned short *const d_input, float *const d_output, const float &mstartdm, const float &mdmstep);
-  
-	void call_kernel_cache_dedisperse_kernel_nchan8192p(const dim3 &block_size, const dim3 &grid_size, const int &bin, unsigned short *const d_input, float *const d_output, float *const d_dm_shifts, const float &mstartdm, const float &mdmstep);
-
-	/** \brief Kernel wrapper for dedispersion kernel which works with 4bit data in case when the number of channels is less than 8192*/
-	void call_kernel_shared_dedisperse_kernel_4bit(const dim3 &block_size, const dim3 &grid_size, unsigned short *const d_input, float *const d_output, const float &mstartdm, const float &mdmstep);
-
-        /** \brief Kernel wrapper for dedispersion kernel which works with 4bit data in case when the nchans is greater than 8192*/
-        void call_kernel_shared_dedisperse_kernel_4bit_8192chan(const dim3 &block_size, const dim3 &grid_size, unsigned short *const d_input, float *const d_output, float *const d_dm_shifts, const float &mstartdm, const float &mdmstep);
 
 } // namespace astroaccelerate
 #endif // ASTRO_ACCELERATE_AA_DEDISPERSION_KERNEL_HPP

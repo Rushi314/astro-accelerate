@@ -4,7 +4,6 @@
 #include <iomanip>
 #include <sstream>
 #include <chrono>
-#include <time.h>
 
 namespace astroaccelerate {
 
@@ -59,8 +58,8 @@ namespace astroaccelerate {
    * \class aa_log aa_log.hpp "include/aa_log.hpp"
    * \brief Class for logging library information. Log a message to the console or to a file on disk.
    * \details Detailed instructions are included in MANUAL.md in the repository.
-   * \author AstroAccelerate team.
-   * \date 3 July 2019.
+   * \author Cees Carels.
+   * \date 7 January 2019.
    */
   template <class stream_target> class aa_log {
   public:
@@ -68,23 +67,20 @@ namespace astroaccelerate {
      * \brief Method to write a message to the output stream for the log_level supplied.
      * \details The log level is denoted by text, the message is denoted by msg.
      */
-	static void write(const char* text, const std::string msg) {
-		std::stringstream ss;
-		time_t rawtime;
-		struct tm * timeinfo;
-		time ( &rawtime );
-		timeinfo = localtime ( &rawtime );
-		ss << asctime (timeinfo);
-		std::string timedate = ss.str();
-		
-		std::string s(timedate, 4, timedate.size()-5);
-		FILE* pStream = stream();
-		if(!pStream) {
-			printf("Returning\n");
-			return;
-		}
-		fprintf(pStream, "%s - %s %s\n", s.c_str(), text, msg.c_str());
-		fflush(pStream);
+    static void write(const char* text, const std::string msg) {
+      auto time_point = std::chrono::system_clock::now();
+      std::time_t now_c = std::chrono::system_clock::to_time_t(time_point);
+      std::stringstream ss;
+//      ss << std::put_time(std::localtime(&now_c), "%F %H:%M:%S");
+//      std::string s = ss.str();
+      FILE* pStream = stream();
+      if(!pStream) {
+	printf("Returning\n");
+	return;
+      }
+//      fprintf(pStream, "%s - %s %s\n", s.c_str(), text, msg.c_str());
+      fprintf(pStream, "%s %s\n", text, msg.c_str());
+      fflush(pStream);
     }
     
     /** \brief Set the stream to a file pointer (default standard output to console). */

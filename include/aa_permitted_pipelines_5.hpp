@@ -234,7 +234,7 @@ namespace astroaccelerate {
     void allocate_memory_cpu_output() {
       size_t estimate_outputbuffer_size = 0;
       size_t outputsize = 0;
-      const size_t range = m_ddtr_strategy.get_nRanges();
+      const size_t range = m_ddtr_strategy.range();
       const int *ndms = m_ddtr_strategy.ndms_data();
       
       for(size_t i = 0; i < range; i++) {
@@ -287,7 +287,7 @@ namespace astroaccelerate {
       tsamp                           = m_ddtr_strategy.metadata().tsamp();
       tsamp_original                  = tsamp;
       maxshift_original               = maxshift;
-      range                           = m_ddtr_strategy.get_nRanges();
+      range                           = m_ddtr_strategy.range();
       tstart_local                    = 0.0;
 
       //Allocate GPU memory
@@ -303,11 +303,11 @@ namespace astroaccelerate {
       
       //Put the dm low, high, step struct contents into separate arrays again.
       //This is needed so that the kernel wrapper functions don't need to be modified.
-      dm_low.resize(m_ddtr_strategy.get_nRanges());
-      dm_high.resize(m_ddtr_strategy.get_nRanges());
-      dm_step.resize(m_ddtr_strategy.get_nRanges());
-      inBin.resize(m_ddtr_strategy.get_nRanges());
-      for(size_t i = 0; i < m_ddtr_strategy.get_nRanges(); i++) {
+      dm_low.resize(m_ddtr_strategy.range());
+      dm_high.resize(m_ddtr_strategy.range());
+      dm_step.resize(m_ddtr_strategy.range());
+      inBin.resize(m_ddtr_strategy.range());
+      for(size_t i = 0; i < m_ddtr_strategy.range(); i++) {
 	dm_low[i]   = m_ddtr_strategy.dm(i).low;
 	dm_high[i]  = m_ddtr_strategy.dm(i).high;
 	dm_step[i]  = m_ddtr_strategy.dm(i).step;
@@ -347,7 +347,7 @@ namespace astroaccelerate {
 	  float time = m_timer.Elapsed() / 1000;
 	  printf("\n\n === OVERALL DEDISPERSION THROUGHPUT INCLUDING SYNCS AND DATA TRANSFERS ===\n");
 	  printf("\n(Performed Brute-Force Dedispersion: %g (GPU estimate)", time);
-	  printf("\nAmount of telescope time processed: %f", tstart_local);
+	  printf("\n Amount of telescope time processed: %f", tstart_local);
 	  printf("\nNumber of samples processed: %ld", inc);
 	  printf("\nReal-time speedup factor: %lf\n", ( tstart_local ) / time);
 	  
@@ -378,7 +378,7 @@ namespace astroaccelerate {
       const int *ndms = m_ddtr_strategy.ndms_data();
       
       //checkCudaErrors(cudaGetLastError());
-      load_data(-1, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[0][t], maxshift, nchans, dmshifts, NULL);
+      load_data(-1, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[0][t], maxshift, nchans, dmshifts);
       //checkCudaErrors(cudaGetLastError());
 
       if(zero_dm_type == aa_pipeline::component_option::zero_dm) {
@@ -407,14 +407,14 @@ namespace astroaccelerate {
       int oldBin = 1;
       for(size_t dm_range = 0; dm_range < range; dm_range++) {
 	printf("\n\nNOTICE: %f\t%f\t%f\t%d\n", m_ddtr_strategy.dm(dm_range).low, m_ddtr_strategy.dm(dm_range).high, m_ddtr_strategy.dm(dm_range).step, m_ddtr_strategy.ndms(dm_range));
-	printf("\nAmount of telescope time processed: %f\n", tstart_local);
+	printf("\n Amount of telescope time processed: %f\n", tstart_local);
 
 	maxshift = maxshift_original / inBin[dm_range];
 
 	cudaDeviceSynchronize();
 	//checkCudaErrors(cudaGetLastError());
 
-	load_data(dm_range, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[dm_range][t], maxshift, nchans, dmshifts, NULL);
+	load_data(dm_range, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[dm_range][t], maxshift, nchans, dmshifts);
 
 	//checkCudaErrors(cudaGetLastError());
 
@@ -426,7 +426,7 @@ namespace astroaccelerate {
 
 	//checkCudaErrors(cudaGetLastError());
 
-	dedisperse(dm_range, t_processed[dm_range][t], inBin.data(), dmshifts, d_input, d_output, NULL, nchans, &tsamp, dm_low.data(), dm_step.data(), ndms, nbits, failsafe);
+	dedisperse(dm_range, t_processed[dm_range][t], inBin.data(), dmshifts, d_input, d_output, nchans, &tsamp, dm_low.data(), dm_step.data(), ndms, nbits, failsafe);
 
 	//checkCudaErrors(cudaGetLastError());
 
@@ -507,7 +507,7 @@ namespace astroaccelerate {
       aa_gpu_timer timer;
       timer.Start();
       const int *ndms =	m_ddtr_strategy.ndms_data();
-      GPU_periodicity(m_ddtr_strategy.get_nRanges(),
+      GPU_periodicity(m_ddtr_strategy.range(),
 		      m_ddtr_strategy.metadata().nsamples(),
 		      max_ndms,
 		      inc,
@@ -544,10 +544,16 @@ namespace astroaccelerate {
       timer.Start();
       const int *ndms = m_ddtr_strategy.ndms_data();
       
-      acceleration_fdas(m_ddtr_strategy.get_nRanges(),
+      acceleration_fdas(m_ddtr_strategy.range(),
 			m_ddtr_strategy.metadata().nsamples(),
 			max_ndms,
 			inc,
+			m_fdas_strategy.num_boots(),
+			m_fdas_strategy.num_trial_bins(),
+			m_fdas_strategy.navdms(),
+			m_fdas_strategy.narrow(),
+			m_fdas_strategy.wide(),
+			m_fdas_strategy.aggression(),
 			m_fdas_strategy.sigma_cutoff(),
 			m_output_buffer,
 			ndms,

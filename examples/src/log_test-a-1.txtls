@@ -1,0 +1,3211 @@
+
+ constructor 
+
+ file opened: /home/guest/abhinav/Telescope_config/gpu.hdr 
+
+ will read metadata 
+
+ File opened :: pFILE 
+
+ **-*-** Time stamp of first sample (MJD) : 58017.599681826483
+ 
+
+ temo_val is :: 58017.599681826483
+ 
+
+ Time stamp of first sample:: 58017.599681826483
+ :: tstart:: 58017.601562500 
+
+ Channel bandwidth size: 200.000000 
+
+ Number of channels: 4096 
+
+ Frequency of channel 11 (MHz): 500.000000 
+
+ Channel bandwidth sign: -1.000000 
+
+ Beam Integration, i.e. Number of FFT cycles: 8 
+
+ ** Time resolution ::  0.000163840 
+
+ ** Channel Bandwith (foff): -0.04882812 
+
+ fch1 is : 499.97558594 
+
+ nsamp is: 1048576 	 tsamp:  0.000163840 
+
+ nchans: : : : 4096 
+
+ 1. in aa_ddtr_strategy.cpp :: m_metadata.strat(): 0 
+
+ range:: >> 7 
+
+ 2. aa_ddtr_Strategy.cpp:: max_tsamps:: 412201 m_maxshift:: 362880 m_max_ndms:: 1512
+
+NOTICE: Maxshift memory needed:	2835 MB.
+NOTICE: Output memory needed:	5670 MB.
+
+ constructor 
+
+ file opened: /data/jroy/data/FRB_DM1000_163.84us_4K_7mP_4msW_3sig.header.gpt 
+
+ get recorded data to be called 
+
+we are here in get_new_recorded_data
+
+ get_new_recorded_data::filterbank_data::nchans:: 4096 
+
+ get_new_recorded_data::::::nchans:: 4096 
+
+ get_new_recorded_data::::::nbits:: 8 
+
+ get_new_recorded_data::::::nsamples:: 1048576 
+
+ get_new_recorded_data::::::inputsize:: 33558528 
+
+ Number of time samples: 1048576 
+
+ Time samples overlap between subsequent readings: 393216
+
+ Overlapped data beigns after first 655360 samples 
+
+ Number of blocks 128 to be read at a time 
+
+ We are here with nbits: 8
+
+ Setting pointer to start of file.
+Reading record          0 /    1048576 	 ( 0% complete)
+Reading record     104857 /    1048576 	 ( 9% complete)
+Reading record     209714 /    1048576 	 (19% complete)
+Reading record     314571 /    1048576 	 (29% complete)
+Reading record     419428 /    1048576 	 (39% complete)
+Reading record     524285 /    1048576 	 (49% complete)
+Reading record     629142 /    1048576 	 (59% complete)
+Reading record     733999 /    1048576 	 (69% complete)
+Reading record     838856 /    1048576 	 (79% complete)
+Reading record     943713 /    1048576 	 (89% complete)
+Reading record    1048570 /    1048576 	 (99% complete)
+
+Breaking after reading 1048576 records
+
+----------------------- MSD info ---------------------------
+  Memory required by boxcar filters:1559.250 MB
+  Memory available:1981.812 MB 
+  Max samples: :75929883
+
+  DMs_per_cycle: 1544
+  Size MSD: 1024 	Size workarea: 141.819336, int: 3051
+------------------------------------------------------------
+
+
+
+412032
+
+
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 0
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.010000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.080000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 210.960384
+CT Device memory bandwidth in GB/s: 126.576230
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 0.000000
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:12.381888 ms
+  MSD_time: 3.019968 ms; SPDT time: 5.064320 ms; Candidate selection time: 3.780736 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 0.000000
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.388160 ms
+  MSD_time: 1.771968 ms; SPDT time: 2.568160 ms; Candidate selection time: 1.901312 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 0.000000
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.134592 ms
+  MSD_time: 2.183136 ms; SPDT time: 2.779104 ms; Candidate selection time: 2.059200 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 0.000000
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.411296 ms
+  MSD_time: 1.309184 ms; SPDT time: 1.725056 ms; Candidate selection time: 1.263904 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 0.000000
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.463552 ms
+  MSD_time: 0.603296 ms; SPDT time: 0.442912 ms; Candidate selection time: 0.308160 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 0.000000
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.203008 ms
+  MSD_time: 0.524928 ms; SPDT time: 0.340480 ms; Candidate selection time: 0.234624 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 0.000000
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.446016 ms
+  MSD_time: 0.590080 ms; SPDT time: 0.441824 ms; Candidate selection time: 0.307872 ms;
+----------<
+
+
+NOTICE: INC:	49152
+NOTICE: Pipeline ended run_pipeline_2 over chunk 1 / 14.
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 1
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.070000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 241.097582
+CT Device memory bandwidth in GB/s: 144.658549
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 8.053063
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:12.245344 ms
+  MSD_time: 2.996928 ms; SPDT time: 5.063488 ms; Candidate selection time: 3.778432 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 8.053063
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.491392 ms
+  MSD_time: 1.773376 ms; SPDT time: 2.569248 ms; Candidate selection time: 1.900480 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 8.053063
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.177824 ms
+  MSD_time: 2.209696 ms; SPDT time: 2.780032 ms; Candidate selection time: 2.058944 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 8.053063
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.395936 ms
+  MSD_time: 1.299104 ms; SPDT time: 1.721696 ms; Candidate selection time: 1.262304 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 8.053063
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.436224 ms
+  MSD_time: 0.580896 ms; SPDT time: 0.442176 ms; Candidate selection time: 0.307200 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 8.053063
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.196288 ms
+  MSD_time: 0.518944 ms; SPDT time: 0.340224 ms; Candidate selection time: 0.234432 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 8.053063
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.431360 ms
+  MSD_time: 0.581376 ms; SPDT time: 0.440544 ms; Candidate selection time: 0.307936 ms;
+----------<
+
+
+NOTICE: INC:	98304
+NOTICE: Pipeline ended run_pipeline_2 over chunk 2 / 14.
+ dm_low 0 dm_high 151.2
+ dm_low 151.2 dm_high 302.4
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 2
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.070000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 241.097582
+CT Device memory bandwidth in GB/s: 144.658549
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 16.106127
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:11.927168 ms
+  MSD_time: 2.976416 ms; SPDT time: 5.060160 ms; Candidate selection time: 3.773248 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 16.106127
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 2 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.553152 ms
+  MSD_time: 1.786208 ms; SPDT time: 2.570752 ms; Candidate selection time: 1.900192 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 16.106127
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.133696 ms
+  MSD_time: 2.182368 ms; SPDT time: 2.778656 ms; Candidate selection time: 2.059200 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 16.106127
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.528704 ms
+  MSD_time: 1.283872 ms; SPDT time: 1.722848 ms; Candidate selection time: 1.262496 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 16.106127
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.450304 ms
+  MSD_time: 0.591264 ms; SPDT time: 0.442464 ms; Candidate selection time: 0.307968 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 16.106127
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.212928 ms
+  MSD_time: 0.529568 ms; SPDT time: 0.341504 ms; Candidate selection time: 0.235168 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 16.106127
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.442176 ms
+  MSD_time: 0.585344 ms; SPDT time: 0.440544 ms; Candidate selection time: 0.308384 ms;
+----------<
+
+
+NOTICE: INC:	147456
+NOTICE: Pipeline ended run_pipeline_2 over chunk 3 / 14.
+ dm_low 0 dm_high 0
+ dm_low 151.2 dm_high 302.4
+ dm_low 0 dm_high 0
+ dm_low 507.15 dm_high 910.35
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 3
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.080000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 210.960384
+CT Device memory bandwidth in GB/s: 126.576230
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 24.159191
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:12.121120 ms
+  MSD_time: 2.981856 ms; SPDT time: 5.059328 ms; Candidate selection time: 3.772064 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 24.159191
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 8 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.496000 ms
+  MSD_time: 1.772864 ms; SPDT time: 2.568640 ms; Candidate selection time: 1.900384 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 24.159191
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.124608 ms
+  MSD_time: 2.172480 ms; SPDT time: 2.775520 ms; Candidate selection time: 2.058944 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 24.159191
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.525888 ms
+  MSD_time: 1.283744 ms; SPDT time: 1.724608 ms; Candidate selection time: 1.262272 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 24.159191
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.443296 ms
+  MSD_time: 0.588448 ms; SPDT time: 0.440832 ms; Candidate selection time: 0.308288 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 24.159191
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.202496 ms
+  MSD_time: 0.525120 ms; SPDT time: 0.340128 ms; Candidate selection time: 0.234304 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 24.159191
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.429696 ms
+  MSD_time: 0.580544 ms; SPDT time: 0.441216 ms; Candidate selection time: 0.307904 ms;
+----------<
+
+
+NOTICE: INC:	196608
+NOTICE: Pipeline ended run_pipeline_2 over chunk 4 / 14.
+ dm_low 0 dm_high 151.2
+ dm_low 151.2 dm_high 302.4
+ dm_low 0 dm_high 0
+ dm_low 507.15 dm_high 910.35
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 4
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.010000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.080000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 210.960384
+CT Device memory bandwidth in GB/s: 126.576230
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 32.212254
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 9 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:12.126720 ms
+  MSD_time: 2.994368 ms; SPDT time: 5.087072 ms; Candidate selection time: 3.772128 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 32.212254
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.370272 ms
+  MSD_time: 1.774464 ms; SPDT time: 2.571008 ms; Candidate selection time: 1.900928 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 32.212254
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.115616 ms
+  MSD_time: 2.167648 ms; SPDT time: 2.773728 ms; Candidate selection time: 2.058432 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 32.212254
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 2 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.551264 ms
+  MSD_time: 1.294016 ms; SPDT time: 1.723392 ms; Candidate selection time: 1.262880 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 32.212254
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.439520 ms
+  MSD_time: 0.580832 ms; SPDT time: 0.441152 ms; Candidate selection time: 0.308224 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 32.212254
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.197504 ms
+  MSD_time: 0.521792 ms; SPDT time: 0.338400 ms; Candidate selection time: 0.234784 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 32.212254
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.426528 ms
+  MSD_time: 0.575808 ms; SPDT time: 0.441152 ms; Candidate selection time: 0.308128 ms;
+----------<
+
+
+NOTICE: INC:	245760
+NOTICE: Pipeline ended run_pipeline_2 over chunk 5 / 14.
+ dm_low 0 dm_high 151.2
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 507.15 dm_high 910.35
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 5
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.010000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.080000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 210.960384
+CT Device memory bandwidth in GB/s: 126.576230
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 40.265320
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 3 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:12.084576 ms
+  MSD_time: 2.979168 ms; SPDT time: 5.058400 ms; Candidate selection time: 3.773376 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 40.265320
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.339168 ms
+  MSD_time: 1.762304 ms; SPDT time: 2.565440 ms; Candidate selection time: 1.900000 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 40.265320
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.117696 ms
+  MSD_time: 2.170368 ms; SPDT time: 2.777088 ms; Candidate selection time: 2.058784 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 40.265320
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.433664 ms
+  MSD_time: 1.326080 ms; SPDT time: 1.724800 ms; Candidate selection time: 1.262304 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 40.265320
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.470304 ms
+  MSD_time: 0.580096 ms; SPDT time: 0.440896 ms; Candidate selection time: 0.318240 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 40.265320
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.206688 ms
+  MSD_time: 0.525440 ms; SPDT time: 0.339200 ms; Candidate selection time: 0.235136 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 40.265320
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.431584 ms
+  MSD_time: 0.579872 ms; SPDT time: 0.441600 ms; Candidate selection time: 0.308064 ms;
+----------<
+
+
+NOTICE: INC:	294912
+NOTICE: Pipeline ended run_pipeline_2 over chunk 6 / 14.
+ dm_low 0 dm_high 151.2
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 6
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.060000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 281.280512
+CT Device memory bandwidth in GB/s: 168.768307
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 48.318382
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 3 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:12.097536 ms
+  MSD_time: 2.977056 ms; SPDT time: 5.063136 ms; Candidate selection time: 3.773184 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 48.318382
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 3 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.510464 ms
+  MSD_time: 1.778688 ms; SPDT time: 2.570368 ms; Candidate selection time: 1.901344 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 48.318382
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.127808 ms
+  MSD_time: 2.174752 ms; SPDT time: 2.778432 ms; Candidate selection time: 2.059712 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 48.318382
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.378560 ms
+  MSD_time: 1.280544 ms; SPDT time: 1.723776 ms; Candidate selection time: 1.262432 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 48.318382
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.448480 ms
+  MSD_time: 0.587200 ms; SPDT time: 0.442816 ms; Candidate selection time: 0.307808 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 48.318382
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.192000 ms
+  MSD_time: 0.519584 ms; SPDT time: 0.338208 ms; Candidate selection time: 0.234336 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 48.318382
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.439008 ms
+  MSD_time: 0.581120 ms; SPDT time: 0.446016 ms; Candidate selection time: 0.307872 ms;
+----------<
+
+
+NOTICE: INC:	344064
+NOTICE: Pipeline ended run_pipeline_2 over chunk 7 / 14.
+ dm_low 0 dm_high 151.2
+ dm_low 151.2 dm_high 302.4
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 7
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.030000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.070000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 241.097582
+CT Device memory bandwidth in GB/s: 144.658549
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 56.371445
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:11.933376 ms
+  MSD_time: 2.977568 ms; SPDT time: 5.059712 ms; Candidate selection time: 3.772064 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 56.371445
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.367776 ms
+  MSD_time: 1.780064 ms; SPDT time: 2.567616 ms; Candidate selection time: 1.899744 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 56.371445
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.127552 ms
+  MSD_time: 2.178656 ms; SPDT time: 2.779488 ms; Candidate selection time: 2.058720 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 56.371445
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.385376 ms
+  MSD_time: 1.282688 ms; SPDT time: 1.724224 ms; Candidate selection time: 1.262848 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 56.371445
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.596768 ms
+  MSD_time: 0.574272 ms; SPDT time: 0.441152 ms; Candidate selection time: 0.307936 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 56.371445
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.203648 ms
+  MSD_time: 0.519936 ms; SPDT time: 0.339680 ms; Candidate selection time: 0.234272 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 56.371445
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.421024 ms
+  MSD_time: 0.570560 ms; SPDT time: 0.440416 ms; Candidate selection time: 0.307968 ms;
+----------<
+
+
+NOTICE: INC:	393216
+NOTICE: Pipeline ended run_pipeline_2 over chunk 8 / 14.
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 910.35 dm_high 1212.75
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 8
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.070000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 241.097582
+CT Device memory bandwidth in GB/s: 144.658549
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 64.424507
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:11.930976 ms
+  MSD_time: 2.980896 ms; SPDT time: 5.057152 ms; Candidate selection time: 3.771360 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 64.424507
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.544352 ms
+  MSD_time: 1.779328 ms; SPDT time: 2.565952 ms; Candidate selection time: 1.900832 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 64.424507
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.143872 ms
+  MSD_time: 2.186016 ms; SPDT time: 2.778720 ms; Candidate selection time: 2.057824 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 64.424507
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.411328 ms
+  MSD_time: 1.311680 ms; SPDT time: 1.724192 ms; Candidate selection time: 1.261984 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 64.424507
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.597792 ms
+  MSD_time: 0.585504 ms; SPDT time: 0.440000 ms; Candidate selection time: 0.308608 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 64.424507
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.211904 ms
+  MSD_time: 0.522656 ms; SPDT time: 0.338624 ms; Candidate selection time: 0.234496 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 64.424507
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.428608 ms
+  MSD_time: 0.573664 ms; SPDT time: 0.438944 ms; Candidate selection time: 0.308032 ms;
+----------<
+
+
+NOTICE: INC:	442368
+NOTICE: Pipeline ended run_pipeline_2 over chunk 9 / 14.
+ dm_low 0 dm_high 0
+ dm_low 151.2 dm_high 302.4
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 910.35 dm_high 1212.75
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 9
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.010000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.080000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 210.960384
+CT Device memory bandwidth in GB/s: 126.576230
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 72.477570
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:11.920256 ms
+  MSD_time: 2.968576 ms; SPDT time: 5.058816 ms; Candidate selection time: 3.772512 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 72.477570
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.551072 ms
+  MSD_time: 1.802176 ms; SPDT time: 2.565728 ms; Candidate selection time: 1.900064 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 72.477570
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.136512 ms
+  MSD_time: 2.177472 ms; SPDT time: 2.779616 ms; Candidate selection time: 2.058912 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 72.477570
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.395904 ms
+  MSD_time: 1.287712 ms; SPDT time: 1.725632 ms; Candidate selection time: 1.262656 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 72.477570
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.431360 ms
+  MSD_time: 0.572896 ms; SPDT time: 0.441408 ms; Candidate selection time: 0.308608 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 72.477570
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.197152 ms
+  MSD_time: 0.517632 ms; SPDT time: 0.338688 ms; Candidate selection time: 0.234880 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 72.477570
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.430912 ms
+  MSD_time: 0.576960 ms; SPDT time: 0.442368 ms; Candidate selection time: 0.307040 ms;
+----------<
+
+
+NOTICE: INC:	491520
+NOTICE: Pipeline ended run_pipeline_2 over chunk 10 / 14.
+ dm_low 0 dm_high 0
+ dm_low 151.2 dm_high 302.4
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 10
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.070000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 241.097582
+CT Device memory bandwidth in GB/s: 144.658549
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 80.530640
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:12.115232 ms
+  MSD_time: 2.979424 ms; SPDT time: 5.058080 ms; Candidate selection time: 3.784000 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 80.530640
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.350048 ms
+  MSD_time: 1.762560 ms; SPDT time: 2.568480 ms; Candidate selection time: 1.900480 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 80.530640
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.119360 ms
+  MSD_time: 2.172352 ms; SPDT time: 2.774528 ms; Candidate selection time: 2.059136 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 80.530640
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.380704 ms
+  MSD_time: 1.280256 ms; SPDT time: 1.723328 ms; Candidate selection time: 1.262464 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 80.530640
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.452160 ms
+  MSD_time: 0.594784 ms; SPDT time: 0.441984 ms; Candidate selection time: 0.308480 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 80.530640
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.196192 ms
+  MSD_time: 0.519520 ms; SPDT time: 0.339872 ms; Candidate selection time: 0.234688 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 80.530640
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.438592 ms
+  MSD_time: 0.583872 ms; SPDT time: 0.441632 ms; Candidate selection time: 0.307456 ms;
+----------<
+
+
+NOTICE: INC:	540672
+NOTICE: Pipeline ended run_pipeline_2 over chunk 11 / 14.
+ dm_low 0 dm_high 151.2
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 11
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.070000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 241.097582
+CT Device memory bandwidth in GB/s: 144.658549
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 88.583702
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:11.919136 ms
+  MSD_time: 2.972896 ms; SPDT time: 5.057664 ms; Candidate selection time: 3.771808 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 88.583702
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.432096 ms
+  MSD_time: 1.779680 ms; SPDT time: 2.573280 ms; Candidate selection time: 1.906304 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 88.583702
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.134304 ms
+  MSD_time: 2.180224 ms; SPDT time: 2.777472 ms; Candidate selection time: 2.057184 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 88.583702
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.422912 ms
+  MSD_time: 1.283552 ms; SPDT time: 1.724192 ms; Candidate selection time: 1.262592 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 88.583702
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.455200 ms
+  MSD_time: 0.582816 ms; SPDT time: 0.441600 ms; Candidate selection time: 0.307680 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 88.583702
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.207200 ms
+  MSD_time: 0.522880 ms; SPDT time: 0.339680 ms; Candidate selection time: 0.237728 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 88.583702
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.429088 ms
+  MSD_time: 0.578816 ms; SPDT time: 0.439904 ms; Candidate selection time: 0.307200 ms;
+----------<
+
+
+NOTICE: INC:	589824
+NOTICE: Pipeline ended run_pipeline_2 over chunk 12 / 14.
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	49152, 12
+CORNER TURN!
+412032 4096 256
+32 1
+412032 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+412032 4096
+32 8
+12876 512
+Performed CT: 0.080000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 210.960384
+CT Device memory bandwidth in GB/s: 126.576230
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 96.636765
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:12.098816 ms
+  MSD_time: 2.973760 ms; SPDT time: 5.056160 ms; Candidate selection time: 3.772192 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 96.636765
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 2 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.498784 ms
+  MSD_time: 1.772320 ms; SPDT time: 2.570080 ms; Candidate selection time: 1.900224 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 96.636765
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:49152; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:7.115808 ms
+  MSD_time: 2.169568 ms; SPDT time: 2.777024 ms; Candidate selection time: 2.058400 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 96.636765
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:24576; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.382080 ms
+  MSD_time: 1.283744 ms; SPDT time: 1.721856 ms; Candidate selection time: 1.262272 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 96.636765
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.432864 ms
+  MSD_time: 0.575424 ms; SPDT time: 0.440960 ms; Candidate selection time: 0.307840 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 96.636765
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.213728 ms
+  MSD_time: 0.533120 ms; SPDT time: 0.339584 ms; Candidate selection time: 0.234560 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 96.636765
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:12288; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.431360 ms
+  MSD_time: 0.579328 ms; SPDT time: 0.441312 ms; Candidate selection time: 0.307840 ms;
+----------<
+
+
+NOTICE: INC:	638976
+NOTICE: Pipeline ended run_pipeline_2 over chunk 13 / 14.
+ dm_low 0 dm_high 151.2
+ dm_low 151.2 dm_high 302.4
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+NOTICE: t_processed:	46080, 13
+CORNER TURN!
+408960 4096 256
+32 1
+408960 1
+Performed ZDM: 0.020000 (GPU estimate)
+CORNER TURN!
+408960 4096
+32 8
+12780 512
+Performed CT: 0.070000 (GPU estimate)
+CT Gops based on 10.00 ops per channel per tsamp: 239.300023
+CT Device memory bandwidth in GB/s: 143.580014
+
+NOTICE: 0.000000	151.199997	0.100000	1512
+
+Amount of telescope time processed: 104.689827
+
+610.351562
+0.029493
+454
+lineshift:	742
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:1512; nTimesamples:46080; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 1512 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:11.954880 ms
+  MSD_time: 2.821216 ms; SPDT time: 4.760448 ms; Candidate selection time: 3.535904 ms;
+----------<
+
+
+
+NOTICE: 151.199997	302.399994	0.200000	756
+
+Amount of telescope time processed: 104.689827
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:756; nTimesamples:46080; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 756 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:5.992480 ms
+  MSD_time: 1.674848 ms; SPDT time: 2.408992 ms; Candidate selection time: 1.781184 ms;
+----------<
+
+
+
+NOTICE: 302.399994	507.149994	0.250000	819
+
+Amount of telescope time processed: 104.689827
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:819; nTimesamples:46080; inBin:1; maxshift:362880; 
+  SPS will run 1 batch containing 819 DM trials.
+  Selected iteration:9; maximum boxcar width requested:3051; maximum boxcar width performed:4224;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:6.721472 ms
+  MSD_time: 2.071744 ms; SPDT time: 2.603744 ms; Candidate selection time: 1.930656 ms;
+----------<
+
+
+
+NOTICE: 507.149994	910.349976	0.400000	1008
+
+Amount of telescope time processed: 104.689827
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:1008; nTimesamples:23040; inBin:2; maxshift:181440; 
+  SPS will run 1 batch containing 1008 DM trials.
+  Selected iteration:7; maximum boxcar width requested:762; maximum boxcar width performed:1152;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 1 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:4.306592 ms
+  MSD_time: 1.227104 ms; SPDT time: 1.619072 ms; Candidate selection time: 1.183328 ms;
+----------<
+
+
+
+NOTICE: 910.349976	1212.750000	0.600000	504
+
+Amount of telescope time processed: 104.689827
+
+915.527405
+0.029493
+634
+lineshift:	922
+Using fast shared memory kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:11520; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.385248 ms
+  MSD_time: 0.567616 ms; SPDT time: 0.411616 ms; Candidate selection time: 0.290560 ms;
+----------<
+
+
+
+NOTICE: 1212.750000	1515.150024	0.800000	378
+
+Amount of telescope time processed: 104.689827
+
+1220.703125
+0.029493
+814
+lineshift:	1102
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:378; nTimesamples:11520; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 378 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.164448 ms
+  MSD_time: 0.510848 ms; SPDT time: 0.314720 ms; Candidate selection time: 0.231456 ms;
+----------<
+
+
+
+NOTICE: 1515.150024	2019.150024	1.000000	504
+
+Amount of telescope time processed: 104.689827
+
+1525.878906
+0.029493
+994
+lineshift:	1282
+ERROR: smem line length is too short.
+Run the auto tuner again!
+
+Using fallback failsafe kernel
+----------> GPU analysis part
+  Dimensions nDMs:504; nTimesamples:11520; inBin:4; maxshift:90720; 
+  SPS will run 1 batch containing 504 DM trials.
+  Selected iteration:4; maximum boxcar width requested:190; maximum boxcar width performed:256;
+
+ candidate algorithm: : : 0 
+
+ here in aa_device_analysis.cu since candidate_algorithm is set to 0 
+
+ *peak_pos == 0 dump_to_disk == 1 
+
+  TOTAL TIME OF SPS:1.354112 ms
+  MSD_time: 0.552000 ms; SPDT time: 0.411328 ms; Candidate selection time: 0.289280 ms;
+----------<
+
+
+NOTICE: INC:	685056
+NOTICE: Pipeline ended run_pipeline_2 over chunk 14 / 14.
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 507.15 dm_high 910.35
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+ dm_low 0 dm_high 0
+NOTICE: Pipeline start/resume run_pipeline_2.
+
+
+ === OVERALL DEDISPERSION THROUGHPUT INCLUDING SYNCS AND DATA TRANSFERS ===
+
+(Performed Brute-Force Dedispersion: 34.5994 (GPU estimate)
+Amount of telescope time processed: 112.239571
+Number of samples processed: 685056
+Real-time speedup factor: 3.243971
+
+ destructor 
+
+ destructor 

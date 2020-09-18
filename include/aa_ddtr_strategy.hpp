@@ -31,6 +31,7 @@ namespace astroaccelerate {
    */
   class aa_ddtr_strategy : public aa_strategy {
   public:
+
     /** \brief Implementation of trivial constructor in source file. */
     aa_ddtr_strategy();
 
@@ -71,7 +72,7 @@ namespace astroaccelerate {
     }
     
     /** \returns the number of dm ranges. */
-    size_t get_nRanges() const {
+    size_t range() const {
       return str_dm.size();
     }
 
@@ -93,11 +94,6 @@ namespace astroaccelerate {
     /** \returns A pointer to the ndms data. */
     const int* ndms_data() const {
       return m_ndms.data();
-    }
-
-    /** return the DM low for specified range */
-    int dm_low(const int range) const{
-	    return str_dm.at(range).low;
     }
     
     /** \returns The number of time chunks. */
@@ -136,14 +132,9 @@ namespace astroaccelerate {
     /** \brief Static member function that prints member data for an aa_ddtr_strategy object. */
     static bool print_info(const aa_ddtr_strategy &strategy) {
       LOG(log_level::dev_debug, "DDTR STRATEGY INFORMATION:");
-      LOG(log_level::dev_debug, "Optimization settings:");
-      LOG(log_level::dev_debug, "\t\tUNROLL:\t\t\t" + std::to_string(UNROLLS));
-      LOG(log_level::dev_debug, "\t\tSNUMREG:\t\t" + std::to_string(SNUMREG));
-      LOG(log_level::dev_debug, "\t\tSDIVINT:\t\t" + std::to_string(SDIVINT));
-      LOG(log_level::dev_debug, "\t\tSDIVINDM:\t\t" + std::to_string(SDIVINDM));
       LOG(log_level::dev_debug, "ddtr+analysis:\t\t" +  (strategy.configured_for_analysis() ? std::string("true") : std::string("false")));
-      LOG(log_level::dev_debug, "ddtr dm ranges:\t\t" + std::to_string(strategy.get_nRanges()));
-      for(size_t i = 0; i < strategy.get_nRanges(); i++) {
+      LOG(log_level::dev_debug, "ddtr dm ranges:\t\t" + std::to_string(strategy.range()));
+      for(size_t i = 0; i < strategy.range(); i++) {
 	const aa_ddtr_plan::dm tmp = strategy.dm(i);
 	LOG(log_level::dev_debug, "     dm (low,high,step,inBin,outBin) " +
 	    std::to_string(tmp.low) + "," + std::to_string(tmp.high) + "," + std::to_string(tmp.step)
@@ -173,6 +164,9 @@ namespace astroaccelerate {
     }
     
   private:
+
+// -------All below have been added to public section of this file above ----------------------------------------------------------------------
+
     bool strategy(const aa_ddtr_plan &plan, const size_t &free_memory, const bool &enable_analysis);
     bool m_ready; /**< The ready state of the ddtr strategy. */
     bool m_strategy_already_calculated; /**< A flag to indicate whether the strategy for the instance has already been allocated. */
@@ -195,6 +189,9 @@ namespace astroaccelerate {
     std::vector<std::vector<int>> m_t_processed; /**< Is allocated in this class, and used elsewhere in the pipeline. */
     float ***output_buffer; /**< \brief 3D array that contains the output. \deprecated Has been moved to permitted_pipeline classes. Remove from source and header files.*/
     bool m_enable_msd_baseline_noise; /** Flag that enables or disables the use of msd baseline noise. */
+
+// -------All above have been added to public section of this file above ----------------------------------------------------------------------
+
   };
 
 } // namespace astroaccelerate

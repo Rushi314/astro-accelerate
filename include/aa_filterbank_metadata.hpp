@@ -45,7 +45,9 @@ namespace astroaccelerate {
 			       m_FREQUENCY_START(0),
 			       m_FREQUENCY_END(0),
 			       m_rawdatafile(""),
-			       m_source_name("") {
+			       m_source_name(""),
+			       m_strat(0),
+			       m_ovrlp(0){
         
     }
   
@@ -73,7 +75,9 @@ namespace astroaccelerate {
 								 m_FREQUENCY_START(meta.m_FREQUENCY_START),
 								 m_FREQUENCY_END(meta.m_FREQUENCY_END),
 								 m_rawdatafile(meta.m_rawdatafile),
-								 m_source_name(meta.m_source_name) {
+								 m_source_name(meta.m_source_name),
+								 m_strat(meta.m_strat),
+								 m_ovrlp(meta.m_ovrlp) {
     
     }
 
@@ -101,7 +105,9 @@ namespace astroaccelerate {
                            const int &nchans,
                            const int &nifs,
                            const double &refdm,
-                           const double &period
+                           const double &period,
+                           const int &strat,
+                           const float &ovrlp
                            )
       : m_az_start(az_start),
 	m_za_start(za_start),
@@ -126,7 +132,9 @@ namespace astroaccelerate {
 	m_FREQUENCY_START(FREQUENCY_START),
 	m_FREQUENCY_END(FREQUENCY_END),
 	m_rawdatafile(rawdatafile),
-	m_source_name(source_name) {
+	m_source_name(source_name),
+	m_strat(strat),
+	m_ovrlp(ovrlp) {
         
     }
 
@@ -160,7 +168,9 @@ namespace astroaccelerate {
 						m_FREQUENCY_START(0),
 						m_FREQUENCY_END(0),
 						m_rawdatafile(""),
-						m_source_name("") {
+						m_source_name(""),
+						m_strat(0),
+						m_ovrlp(0) {
       
     }
     
@@ -305,6 +315,16 @@ namespace astroaccelerate {
       return (m_fch1 + channel_idx * m_foff);
     }
 
+    /** \returns mstrat. */
+    int strat() const {
+      return m_strat;
+    }
+
+    /** \returns mstrat. */
+    float ovrlp() const {
+      return m_ovrlp;
+    }
+
     static bool print_info(const aa_filterbank_metadata &metadata) {
       LOG(log_level::dev_debug, "FILTERBANK METADATA INFORMATION:");
       LOG(log_level::dev_debug, "az_start:\t\t" + std::to_string(metadata.az_start()));
@@ -332,6 +352,8 @@ namespace astroaccelerate {
       LOG(log_level::dev_debug, "rawdatafile:\t\t" + metadata.rawdatafile());
       LOG(log_level::dev_debug, "source_name:\t\t" + metadata.source_name());
       LOG(log_level::dev_debug, "N:\t\t\t" + std::to_string(metadata.N()));
+      LOG(log_level::dev_debug, "m_strat:\t\t\t" + std::to_string(metadata.strat()));
+      LOG(log_level::dev_debug, "m_ovrlp:\t\t\t" + std::to_string(metadata.ovrlp()));
       return true;
     }
     
@@ -358,6 +380,8 @@ namespace astroaccelerate {
     int m_nsamples;
     int m_nchans;
     int m_nifs;
+    int m_strat;
+    float m_ovrlp;
     
     char m_FREQUENCY_START;
     char m_FREQUENCY_END;

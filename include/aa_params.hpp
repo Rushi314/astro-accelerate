@@ -26,7 +26,7 @@ namespace astroaccelerate {
   //Added by Karel Adamek
 #define WARP 32
 #define HALF_WARP 16
-#define MSD_PARTIAL_SIZE 5
+#define MSD_PARTIAL_SIZE 3
 #define MSD_RESULTS_SIZE 3
 #define MSD_ELEM_PER_THREAD 8
 #define MSD_WARPS_PER_BLOCK 16
@@ -51,7 +51,7 @@ namespace astroaccelerate {
 #define ACCEL_STEP (float)(2.0) //1 //default acceleration step
 #define ACCEL_STEP_R (float)(1.0f/ACCEL_STEP)
 #define ZMAX 96
-#define NKERN (int)(2*ZMAX/(ACCEL_STEP)+1) //NKERN must be calculated from 2*ZMAX/(ACCEL_STEP)+1
+#define NKERN 97 //NKERN must be calculated from 2*ZMAX/(ACCEL_STEP)+1
 
 //#define ZLO  -(int)((ZMAX/ACCEL_STEP) )
 #define TBSIZEX 32
@@ -78,12 +78,6 @@ namespace astroaccelerate {
 #define DIT_YSTEP 2
 #define DIT_ELEMENTS_PER_THREAD 4
 
-//experimental clustering filter
-#define PPF_PEAKS_PER_BLOCK 10
-#define PPF_DPB 128
-//radius of search for peak filtering in miliseconds
-#define	PPF_SEARCH_RANGE_IN_MS 15
-
 #define PPF_L1_THREADS_PER_BLOCK 256
 #define PPF_L1_SPECTRA_PER_BLOCK 5
 
@@ -97,13 +91,17 @@ namespace astroaccelerate {
   //#define SFDIVINDM 60.0f
 
   // Usual
+//#define UNROLLS 8
+//#define SNUMREG 8
+//#define SDIVINT 14
+//#define SDIVINDM 40
+//#define SFDIVINDM 40.0f
 
 #define UNROLLS 8
-#define SNUMREG 8
-#define SDIVINT 14
-#define SDIVINDM 40
-#define SFDIVINDM 40.0f
-
+#define SNUMREG 4
+#define SDIVINT 48
+#define SDIVINDM 21
+#define SFDIVINDM 21.0f
 
 } // namespace astroaccelerate
   

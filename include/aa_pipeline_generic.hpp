@@ -7,6 +7,7 @@
 #include "aa_pipeline.hpp"
 #include "aa_config.hpp"
 #include "aa_pipeline_api.hpp"
+#include "aa_ddtr_strategy.hpp"
 
 namespace astroaccelerate {
 
@@ -15,8 +16,8 @@ namespace astroaccelerate {
    * \details No pipeline will run if the input parameters are invalid.
    * \details This function serves as boilerplate code that provides a wrapper around the API.
    * \details This function serves as an example code for library users to integrate AstroAccelerate into their own applications.
-   * \author AstroAccelerate.
-   * \date 16 August 2019.
+   * \author Cees Carels.
+   * \date 24 October 2018.
    */  
   template <typename T>
   void aa_pipeline_generic(const std::vector<aa_pipeline::component> &selected_components,
@@ -27,6 +28,7 @@ namespace astroaccelerate {
 			   const float &analysis_sigma_cutoff = 0.0,
 			   const float &analysis_sigma_constant = 0.0,
 			   const float &analysis_max_boxcar_width_in_sec = 0.0,
+			   const bool  &analysis_enable_candidate_algorithm = false,
 			   const bool  &analysis_enable_msd_baseline_noise_algorithm = false,
 			   const float &periodicity_sigma_cutoff = 0.0,
 			   const float &periodicity_sigma_constant = 0.0,
@@ -43,6 +45,44 @@ namespace astroaccelerate {
      * aa_pipeline::component::analysis, then aa_pipeline_api will ignore aa_analysis_plan
      * when this function attempts to bind aa_analysis_plan.
      */
+
+    printf("\n in include/aa_pipeline_generic.hpp \n");
+    printf("\n filterbank_data.nchans:  %d\n", filterbank_data.nchans());
+
+//    int strat;
+//    &strat = filterbank_data.strat() + 1;
+//    printf("\n strat:  %d\n", strat);
+
+//    aa_ddtr_strategy   m_ddtr_strategy;
+//    printf("\n m_ddtr_strategy.maxshift:  %d\n", m_ddtr_strategy.maxshift());
+
+/*    filterbank_data(filterbank_data.telescope_id(),
+                                filterbank_data.machine_id(),
+                                filterbank_data.data_type(),
+                                "unknown",
+                                "unknown",
+                                filterbank_data.barycentric(),
+                                filterbank_data.pulsarcentric(),
+                                filterbank_data.az_start(),
+                                filterbank_data.za_start(),
+                                filterbank_data.src_raj(),
+                                filterbank_data.src_dej(),
+                                filterbank_data.tstart(),
+                                filterbank_data.tsamp(),
+                                filterbank_data.nbits(),
+                                filterbank_data.nsamples(),
+                                filterbank_data.fch1(),
+                                filterbank_data.foff(),
+                                0,
+                                filterbank_data.fchannel(),
+                                0,
+                                filterbank_data.nchans(),
+                                filterbank_data.nifs(),
+                                filterbank_data.refdm(),
+                                filterbank_data.period(),
+                                1);
+
+*/    
     
     // Configure astro-accelerate as a library user
     aa_pipeline::pipeline the_pipeline;
@@ -78,9 +118,21 @@ namespace astroaccelerate {
     // If a component is not required, then even if it is supplied, it will be ignored.
     aa_pipeline_api<T> pipeline_manager(the_pipeline, pipeline_options, filterbank_data, input_data, selected_card_info);
     
+
     // Bind the Plan to the manager
     aa_ddtr_plan ddtr_plan;
     ddtr_plan.add_dm(dm_ranges);
+
+/*    if(pipeline_manager.bind(ddtr_plan)) {
+      LOG(log_level::notice, "ddtr_plan bound successfully.");
+    }
+    else {
+      LOG(log_level::error, "Could not bind ddtr_plan.");
+    }
+*/
+
+    printf("\n aa_pipeline_generic.hpp > filterbank_data.strat():  %d\n", filterbank_data.strat());
+//    if (filterbank_data.strat() != 1) {
 
     if(pipeline_manager.bind(ddtr_plan)) {
       LOG(log_level::notice, "ddtr_plan bound successfully.");
@@ -88,6 +140,9 @@ namespace astroaccelerate {
     else {
       LOG(log_level::error, "Could not bind ddtr_plan.");
     }
+
+    
+//    printf("\n m_ddtr_strategy.maxshift:  %d\n", m_ddtr_strategy.maxshift());
 
     // When aa_ddtr_plan was bound to aa_pipeline_api, aa_pipeline_api already
     // knew whether aa_pipeline::component::analysis was supplied.
@@ -110,19 +165,14 @@ namespace astroaccelerate {
     // Lastly, aa_ddtr_strategy contains a member field to query whether
     // analysis will be run. This enables aa_analysis_strategy to validate
     // the aa_ddtr_strategy that was supplied to it.
-	
-	
-	aa_analysis_plan::selectable_candidate_algorithm selected_candidate_algorithm;
-	if (pipeline_options.find(aa_pipeline::component_option::candidate_algorithm) != pipeline_options.end()) {
-		selected_candidate_algorithm = aa_analysis_plan::selectable_candidate_algorithm::threshold;
-	}
-	else if (pipeline_options.find(aa_pipeline::component_option::candidate_filtering) != pipeline_options.end()) {
-		selected_candidate_algorithm = aa_analysis_plan::selectable_candidate_algorithm::peak_filtering;
-	}
-    else {
-      selected_candidate_algorithm = aa_analysis_plan::selectable_candidate_algorithm::peak_find ;
+
+    aa_analysis_plan::selectable_candidate_algorithm selected_candidate_algorithm;
+    if(analysis_enable_candidate_algorithm) {
+      selected_candidate_algorithm = aa_analysis_plan::selectable_candidate_algorithm::on;
     }
-	
+    else {
+      selected_candidate_algorithm = aa_analysis_plan::selectable_candidate_algorithm::off;
+    }
     
     aa_analysis_plan analysis_plan(pipeline_manager.ddtr_strategy(),
 				   analysis_sigma_cutoff,
@@ -151,6 +201,8 @@ namespace astroaccelerate {
     else {
       LOG(log_level::notice, "Pipeline is not ready.");
     }
+
+//    } // if strat condition ends here ----------------------------------------------------------------------------------
     
     // Run the pipeline
     if(pipeline_manager.run()) {

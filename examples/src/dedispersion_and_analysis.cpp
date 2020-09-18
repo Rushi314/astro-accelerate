@@ -2,130 +2,589 @@
  * Example code for linking against astro-accelerate library.
  *
  * Compile with: g++ -std=c++11 -I/path/to/astro-accelerate/include/ -L/path/to/astro-accelerate/build -Wl,-rpath,/path/to/astro-accelerate/build -lastroaccelerate -I/usr/local/cuda/include/ -L/usr/local/cuda/lib64 -Wl,-rpath,/usr/local/cuda/lib64 -I/usr/local/cuda-8.0/samples/common/inc/ -lcudart dedispersion.cpp -o test
+
+Compile with:
+g++ -std=c++11 -I/home/guest/abhinav/FRB_pipeline-1.7.10/include/ -L/home/guest/abhinav/FRB_pipeline-1.7.10/build/ -Wl,-rpath,/home/guest/abhinav/FRB_pipeline-1.7.10/build/ -lastroaccelerate -I/usr/local/cuda/include/ -L/usr/local/cuda/lib64 -Wl,-rpath,/usr/local/cuda/lib64 -I/usr/local/cuda-8.0/samples/common/inc/ -lcudart dedispersion_and_analysis.cpp -o test_a
+
+On TAPTI server, compile with:
+g++ -std=c++11 -I/Data/rraj/abhinav/FRB_pipeline-1.7.10/include/ -L/Data/rraj/abhinav/FRB_pipeline-1.7.10/build/ -Wl,-rpath,/Data/rraj/abhinav/FRB_pipeline-1.7.10/build/ -lastroaccelerate -I/usr/local/cuda/include/ -L/usr/local/cuda/lib64 -Wl,-rpath,/usr/local/cuda/lib64 -I/usr/local/cuda-8.0/samples/common/inc/ -lcudart dedispersion_and_analysis.cpp -o test_a
+
+Run the script using:
+./astro-accelerate.sh ../input_files/GMRT.SPS.10m.txt /home/guest/abhinav/FRB_pipeline-1.7.10/output > log_file.txt
+
+On TAPTI server, run the script using:
+./astro-accelerate.sh ../input_files/GMRT.SPS.10m.txt /Data/rraj/abhinav/FRB_pipeline-1.7.10/output > log_file.txt
+
+
  */
 
+#define _POSIX_SOURCE
+#include <unistd.h>
+
+#include <fstream> // for file-access
+#include <string>
+
 #include <iostream>
-#include <fstream>
 
 #include "aa_ddtr_plan.hpp"
 #include "aa_ddtr_strategy.hpp"
 #include "aa_filterbank_metadata.hpp"
+#include "aa_permitted_pipelines_2.hpp"
+
+#include "aa_analysis_plan.hpp"
+#include "aa_analysis_strategy.hpp"
+
+#include "aa_log.hpp"
 #include "aa_sigproc_input.hpp"
-#include "aa_permitted_pipelines_generic.hpp"
-#include "aa_pipeline_api.hpp"
-#include "aa_device_info.hpp"
+
+#include "aa_gpu_timer.hpp"
+
+// below libraries added to check the time stamp of source.hdr
+#include <cstdlib>
+#include <cstdio>
+#include <array>
+
+#include <wordexp.h>
+
+#include <sstream>
+
+#include <sys/stat.h>  // to create directory
+
+#include <algorithm>  // to remove new line charcter from string
+
 
 using namespace astroaccelerate;
 
-void write_scale_candidates(aa_filterbank_metadata metadata, aa_pipeline_api<unsigned short> &pipeline, long int tprocessed, size_t nCandidates, unsigned int* dm, unsigned int* time_samples, float* snr, unsigned int* width, int current_range, int current_tchunk){
-	float scaled_dm, scaled_time_sample, scaled_time;
-	int scaled_width;
-	char filename[100];
-	std::ofstream output_file;
+std::string timestamp(std::string source_fname);
 
-	const int *list_ndms = pipeline.get_ndms_array();
-	aa_ddtr_strategy plan = pipeline.ddtr_strategy();
-	float dm_low =  plan.dm(current_range).low;
-	float dm_high = pipeline.dm_low(current_range) + list_ndms[current_range]*plan.dm(current_range).step;
-	sprintf(filename, "results_t-%d_dm-%.3f-%.3f.txt", current_tchunk, dm_low, dm_high);
-	output_file.open(filename);
-//	printf("DM: %lf %lf %lf %d", dm_low, dm_high, plan.dm(current_range).step,list_ndms[current_range]);
-	for (int i = 0; i < (int)nCandidates; i++){
-		scaled_dm = dm[i]*plan.dm(current_range).step + dm_low;
-                scaled_time_sample = time_samples[i]*plan.dm(current_range).inBin + tprocessed;
-                scaled_time = time_samples[i]*metadata.tsamp()*plan.dm(current_range).inBin + tprocessed*metadata.tsamp();
-                scaled_width = width[i]*plan.dm(current_range).inBin;
+//int main() {
+int main(int argc,  char **argv) {
+  
+  unsigned long int f_pos;  // input file poistion variable
 
-		output_file << scaled_dm << "\t" << snr[i] << "\t" << scaled_time_sample << "\t" << scaled_time << "\t" << scaled_width << "\n";
+  int sysint, sysint1, sysint2, sysint3, sysint4, sysint5, sysint6;	// this is to store value returned by system command when script is called at the end of file.
+
+// variables to read data from input file
+  float sigma_cutoff_input, sigma_constant_input, max_boxcar_width_in_sec_input, periodicity_sigma_cutoff_input, periodicity_harmonics_input, max_dm_val;
+  bool analysis_val, baselinenoise_val, debug_val;
+  char file_name_input[128], config_path[128]; 
+  baselinenoise_val = false; // yes, it is being used
+  analysis_val = false; // not being used now
+  debug_val = false; // not being used now
+
+// buf count loop variables
+  int buf_count = 0;
+  int max_buf_count = 8;
+
+// vaiable to enable storing of each output global_peaks.dat file 
+  int test_flg = 1;
+
+  char cwd[256]; // to store current working directory
+
+  std::string rm_cmnd, dir_cmnd, cat_cmnd;
+
+// timing variables
+    float time_tmp, time_first_read, time_buf_read, time_buf_process, time_conc_files_find_frb, time_total;
+    aa_gpu_timer       timer_var, timer_var_total;
+
+// timestamp of source.hdr
+  std::string result_tmp, result_time_stamp;
+
+// varibales that store the amount of data processed
+   int nsamp_ovrlp_pt, nsamp_ovrlp_val;
+   float tsamp_unique;
+
+
+// variables to write the python file name
+  std::stringstream stream;
+  std::string s_ra, s_dec, s_mjd, s_bcount, py_fname, s_tsamp_unique;
+
+// finding the intial precision to be set later
+  std::streamsize ss = std::cout.precision();
+  std::cout << "Initial precision = " << ss << '\n';
+
+
+  aa_ddtr_plan ddtr_plan;
+// dm ranges below for FRB 1000 data (if commented out - it is being read from the input file):
+/*
+  ddtr_plan.add_dm(0, 150, 0.1, 1, 1);
+  ddtr_plan.add_dm(150, 300, 0.2, 2, 2);
+  ddtr_plan.add_dm(300, 500, 0.25, 2, 2);
+  ddtr_plan.add_dm(500, 900, 0.4, 4, 4);
+  ddtr_plan.add_dm(900, 1200, 0.6, 4, 4);
+  ddtr_plan.add_dm(1200, 1500, 0.8, 8, 8);
+  ddtr_plan.add_dm(1500, 2000, 1.0, 8, 8);
+*/
+
+// reading the input file for dm range and other input data::----------------------------------------------------
+// extracting the input file name from the argument passed through the terminal to the astroaccelerate.sh bash script
+  if (argc > 1) {
+        printf("argv[1] = %s", argv[1]); 
+    } else {
+        printf("No file name entered. Exiting...");
+        return 0;
+    }
+
+// added a new function named read_metadata_input in aa_sigproc_input to read input file data
+  aa_sigproc_input       filterbank_datafile_input(argv[1]);
+  filterbank_datafile_input.read_metadata_input(&sigma_cutoff_input, &sigma_constant_input, &max_boxcar_width_in_sec_input, &periodicity_sigma_cutoff_input, &periodicity_harmonics_input, &ddtr_plan, &baselinenoise_val, &analysis_val, &debug_val, &file_name_input, &config_path);
+  printf("\n ddtr_plan.user_dm(ddtr_plan.range()-1).high: %f \n", ddtr_plan.user_dm(ddtr_plan.range()-1).high);
+  std::string file_name_input_str;
+
+//  filterbank_datafile_input.read_metadata_input(&sigma_cutoff_input, &sigma_constant_input, &max_boxcar_width_in_sec_input, &periodicity_sigma_cutoff_input, &periodicity_harmonics_input, &ddtr_plan, &baselinenoise_val, &analysis_val, &debug_val, &file_name_input_str, &config_path);
+
+
+// input file read ----------------------------------------------------------------------------------------------
+  printf("\n file_name_input :: %s \n", file_name_input);
+  printf("\nbaselinenoise_val: is: %d \n", baselinenoise_val);
+
+//  for (int i =0; i < 7; i++) {
+//    printf("\n ddtr_plan[0]: low: %f high: %f step: %f inBin: %d outBin: %d\n", ddtr_plan.user_dm(i).low, ddtr_plan.user_dm(i).high, ddtr_plan.user_dm(i).step, ddtr_plan.user_dm(i).inBin, ddtr_plan.user_dm(i).outBin);
+//  }
+
+
+/*  const float sigma_cutoff = 6.0;
+  const float sigma_constant = 3.0;
+  const float max_boxcar_width_in_sec = 0.5;
+*/
+
+// assigning variables from the input file:
+  const float sigma_cutoff = sigma_cutoff_input;
+  const float sigma_constant = sigma_constant_input;
+  const float max_boxcar_width_in_sec = max_boxcar_width_in_sec_input;
+
+  const aa_analysis_plan::selectable_candidate_algorithm algo = aa_analysis_plan::selectable_candidate_algorithm::off; // not changed, being used as it was in the example file
+// following constants added for FRB file (not being used now):
+  const float periodicity_sigma_cutoff = periodicity_sigma_cutoff_input;
+  const float periodicity_harmonics = periodicity_harmonics_input;
+
+
+// input data file location and config file path ------------------------------------------------------------------------------------------------------------------------------
+
+//  aa_sigproc_input       filterbank_datafile("/mnt/data/AstroAccelerate/filterbank/BenMeerKAT.fil");
+//  aa_sigproc_input       filterbank_datafile("/data/jroy/data/FRB_DM1000_163.84us_4K_7mP_4msW_3sig.header.fil");
+//  aa_sigproc_input       filterbank_datafile("/data/jroy/data/FRB_DM1000_163.84us_4K_7mP_4msW_3sig.header.fil");
+//  aa_sigproc_input       filterbank_datafile("/data/jroy/data/FRB_DM1000_163.84us_4K_7mP_4msW_3sig.header.gpt");
+
+  std:: string fname_input(file_name_input);
+  printf("\n fname_input::%s::test\n", fname_input.c_str());
+  fname_input.erase(std::remove(fname_input.begin(), fname_input.end(), '\n'), fname_input.end());
+  printf("\n fname_input::%s::test\n", fname_input.c_str());
+
+  aa_sigproc_input       filterbank_datafile(fname_input);  
+
+  filterbank_datafile.open();
+
+  std:: string configpath_name(config_path);
+  printf("\n configpath_name::%s::test\n", configpath_name.c_str());
+  configpath_name.erase(std::remove(configpath_name.begin(), configpath_name.end(), '\n'), configpath_name.end());
+  printf("\n configpath_name::%s::test\n", configpath_name.c_str());
+
+  std::string source_fname, gpu_fname;
+  source_fname = configpath_name + "source.hdr";
+  gpu_fname = configpath_name + "gpu.hdr";
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// reading metadata from gpu.hdr file
+  aa_sigproc_input       filterbank_datafile_config(gpu_fname);
+  aa_filterbank_metadata filterbank_metadata = filterbank_datafile_config.read_metadata(ddtr_plan.user_dm(ddtr_plan.range()-1).high, configpath_name);
+
+/*
+  // Filterbank metadata
+  // (Data description from "SIGPROC-v3.7 (Pulsar) Signal Processing Programs")
+  const double tstart = 50000;
+  const double tsamp = 6.4E-5;
+  const double nbits = 8;
+  const double nsamples = 937984;
+  const double fch1 = 1564;
+  const double foff = -0.208984;
+  const double nchans = 2048;
+  
+  aa_filterbank_metadata metadata(tstart, tsamp, nbits, nsamples, fch1, foff, nchans);
+*/
+// variables assigned after reading gu.hdr file
+  const double tstart = filterbank_metadata.tstart();
+  const double tsamp = filterbank_metadata.tsamp();
+  const double nbits = filterbank_metadata.nbits();
+  const double nsamples = filterbank_metadata.nsamples();
+  const double fch1 = filterbank_metadata.fch1();
+  const double foff = filterbank_metadata.foff();
+  const double nchans = filterbank_metadata.nchans();
+  
+  aa_filterbank_metadata metadata(tstart, tsamp, nbits, nsamples, fch1, foff, nchans);
+
+  printf("\n filterbank_metadata.ovrlp(): %f \n", filterbank_metadata.ovrlp());
+// deciding how many time samples will be overlapped in each reading.
+  if (nsamples == 2*1024*1024) nsamp_ovrlp_val = 768*1024;	///RD:This needs to be changed for different bands
+  else if(nsamples == 1*1024*1024) nsamp_ovrlp_val = 384*1024;
+  else if(nsamples == 512*1024) nsamp_ovrlp_val = 192*1024;
+  else if(nsamples == 256*1024) nsamp_ovrlp_val = 96*1024;
+  else if(nsamples == 128*1024) nsamp_ovrlp_val = 48*1024;
+
+  nsamp_ovrlp_pt = nsamples - nsamp_ovrlp_val;
+  tsamp_unique = nsamp_ovrlp_pt*tsamp;
+  printf("\n number of time samples to be processed only once (without overlap): %d \n", nsamp_ovrlp_pt);
+  printf("\n amount of telescope time to be processed only once (without overlap): %f \n", tsamp_unique);
+  
+
+//  const size_t free_memory = 7000000000; // Free memory on the GPU in bytes
+  const size_t free_memory = 12000000000; // Free memory on the GPU in bytes
+
+
+  bool enable_analysis = true;       // The strategy will be optimised to run just dedispersion
+  aa_ddtr_strategy ddtr_strategy(ddtr_plan, metadata, free_memory, enable_analysis); //RD : Look into more detail.
+
+// read the timestamp of source.hdr
+  result_tmp = timestamp(source_fname);
+  printf("\n first check: timestamp of source.hdr is: %s \n", result_tmp.c_str());
+
+   
+  if(!(ddtr_strategy.ready())) {
+    LOG(log_level::error, "ddtr_strategy not ready.");
+    return 0;
+  }
+  
+  //Fill input data manually
+  /*std::vector<unsigned short> input_data(nsamples*nchans);
+  
+  for(auto& i : input_data) {
+    i = 0.0;
+  }*/
+  
+
+//  aa_filterbank_metadata filterbank_metadata = filterbank_datafile.read_metadata();  
+  
+  
+//  aa_analysis_plan analysis_plan(ddtr_strategy, sigma_cutoff, sigma_constant, max_boxcar_width_in_sec, algo, false);
+  aa_analysis_plan analysis_plan(ddtr_strategy, sigma_cutoff, sigma_constant, max_boxcar_width_in_sec, algo, true);
+  aa_analysis_strategy analysis_strategy(analysis_plan); //RD : Look into more detail.
+
+  if(!(analysis_strategy.ready())) {
+    LOG(log_level::error, "analysis_strategy not ready.");
+    return 0;
+  }
+
+// reading first buffer:
+
+  timer_var_total.Start(); // starting timer for total time taken
+
+  timer_var.Start();  // starting timer for first read
+
+    if(!filterbank_datafile.read_new_signal(buf_count, filterbank_metadata, &f_pos)) {
+//    if(!filterbank_datafile.read_signal()) {
+      std::cout << "ERROR: Could not read telescope data." << std::endl;
+      return 0;
+  }
+  timer_var.Stop();
+
+  time_first_read = timer_var.Elapsed() / 1000;
+  printf("\n\n === First buffer read ===\n");
+  //// RD: Check ////
+  aa_permitted_pipelines_2<aa_pipeline::component_option::zero_dm, false> runner(ddtr_strategy, analysis_strategy, filterbank_datafile.input_buffer().data());
+
+
+//  bool dump_to_disk = false;
+  bool dump_to_disk = true;
+  bool dump_to_user = true;
+  std::vector<analysis_output> output;
+
+/*
+// making small edit to source.hdr to check if the timestep check is working well:
+// only uncomment it to test weather the timestamp changes are being picked up!
+
+    FILE * pFile_source_loc;
+
+//    std::ofstream ofs;
+//    ofs.open ("/home/guest/abhinav/FRB_pipeline-1.7.10/input_files/source.hdr");
+    pFile_source_loc = fopen("/home/guest/abhinav/FRB_pipeline-1.7.10/input_files/source.hdr", "w");
+    if(pFile_source_loc == NULL) {
+      printf("\n ATTENTION:: source.hdr source cannot be opened! \n");
+    }
+   else {
+   printf("\n File opened :: source.hdr for editing to simulate that the code will pick up changes in timestamp \n");
+   fprintf(pFile_source_loc, "src_raj: 214400.0\n");
+   fprintf(pFile_source_loc, "src_dej: -393300.0\n");
+    }  // else condition ends -----------------
+   if(!fclose(pFile_source_loc)) printf("\n source.hdr file successfully closed \n");
+*/
+
+//---------------------------------------------------------------------------------------------------------------------
+
+  
+  if(runner.setup()) {
+
+  for (buf_count=0; buf_count < max_buf_count; buf_count++)
+  {
+
+    printf("\n buf count:: :: %d \n", buf_count);
+
+// read the timestamp of source.hdr
+    result_time_stamp = timestamp(source_fname);
+    printf("\n buf_count: %d timestamp is: %s \n", buf_count, result_time_stamp.c_str());
+    if(result_tmp != result_time_stamp)
+    {    
+	printf("\n source.hdr has been modified. Time stamps do not match. Will read source information again. \n");
+	// updating metadata from source.hdr file
+        aa_sigproc_input       filterbank_datafile_config(source_fname);
+        aa_filterbank_metadata filterbank_metadata_source = filterbank_datafile_config.read_metadata_source(filterbank_metadata);
+	filterbank_metadata = filterbank_metadata_source;
+	printf("\n filterbank_metadata.src_raj(): %f \n", filterbank_metadata.src_raj());
+    }
+    else	printf("\n source.hdr is still the same. Time stamps match \n");
+
+// removing files from previous run and creating directories
+// if test_flg is true, it will create a bcount$ directory for each buffer ($ = buf_count)    
+    if (test_flg)
+    {
+    stream << buf_count;   //RD(28/09): What for? Converts numbers to strings.
+    s_bcount = stream.str();
+    stream.str(std::string());
+    stream.clear();
+
+    rm_cmnd = "rm ./test/bcount" + s_bcount + "/global*";
+    dir_cmnd = "test/bcount" + s_bcount;
+    printf("\n buf count remove command: %s \n", rm_cmnd.c_str());
+    printf("\n buf count mkdir command: %s \n", dir_cmnd.c_str());
+ 
+    sysint2 = system("pwd");
+    sysint2 = system("mkdir test/");
+    mkdir(dir_cmnd.c_str(), ACCESSPERMS); 
+    sysint2 = system(rm_cmnd.c_str());
+    }
+
+/*
+    if (buf_count == 0) 	sysint2 = system("rm -rf /test/");
+//    if (buf_count == 0) 	sysint2 = system("pwd");
+//    if (buf_count == 0) 	mkdir("test/bcount0", ACCESSPERMS);
+    if (buf_count == 0) 	mkdir(dir_cmnd.c_str(), ACCESSPERMS);
+//    if (buf_count == 0) 	sysint2 = system("rm ../test/bcount0/global*");
+//    if (buf_count == 0) 	sysint2 = system("rm ./test/bcount0/global*");
+    if (buf_count == 0) 	sysint2 = system(rm_cmnd.c_str());
+
+//    if (buf_count == 1) 	sysint2 = system("mkdir /test/bcount1/");
+    if (buf_count == 1) 	mkdir("test/bcount1", ACCESSPERMS);
+    if (buf_count == 1) 	sysint2 = system("rm ./test/bcount1/global*");
+    if (buf_count == 1) 	sysint2 = system("rm ../test/bcount1/global*");
+
+//    if (buf_count == 2) 	sysint2 = system("mkdir /test/bcount2/");
+    if (buf_count == 2) 	mkdir("test/bcount2", ACCESSPERMS);
+    if (buf_count == 2) 	sysint2 = system("rm ./test/bcount2/global*");
+    if (buf_count == 2) 	sysint2 = system("rm ../test/bcount2/global*");
+
+//    if (buf_count == 3) 	sysint2 = system("mkdir /test/bcount3/");
+    if (buf_count == 3) 	mkdir("test/bcount3", ACCESSPERMS);
+    if (buf_count == 3) 	sysint2 = system("rm ./test/bcount3/global*");
+    if (buf_count == 3) 	sysint2 = system("rm ../test/bcount3/global*");
+
+//    if (buf_count == 4) 	sysint2 = system("mkdir /test/bcount4/");
+    if (buf_count == 4) 	mkdir("test/bcount4", ACCESSPERMS);
+    if (buf_count == 4) 	sysint2 = system("rm ./test/bcount4/global*");
+    if (buf_count == 4) 	sysint2 = system("rm ../test/bcount4/global*");
+//    if (buf_count == 3) 	sysint2 = system("rm -f ../test/bcount3/global*");
+*/
+
+    sysint1 = system("rm -f analysed*"); 
+    sysint2 = system("rm -f acc*");
+    sysint3 = system("rm -f global*");
+    sysint4 = system("rm -f fourier*");
+    sysint5 = system("rm -f harmonic*");
+    sysint6 = system("rm -f candidate*");
+    sysint = system("rm -f peak*");
+    printf("\n all files removed \n");
+
+
+
+// read only if the buffer number is greater than 0 - because first buffer has been read above already:
+    if(buf_count > 0) {
+    printf("\n we are here with buf_count: %d \n", buf_count);
+
+    timer_var.Start();
+    filterbank_datafile.open();
+    if(!filterbank_datafile.read_new_signal(buf_count, filterbank_metadata, &f_pos)) {
+//    if(!filterbank_datafile.read_signal()) {
+      std::cout << "ERROR: Could not read telescope data." << std::endl;
+      return 0;
+    }  
+
+    aa_permitted_pipelines_2<aa_pipeline::component_option::zero_dm, false> runner(ddtr_strategy, analysis_strategy, filterbank_datafile.input_buffer().data());
+
+    timer_var.Stop();
+    time_buf_read = timer_var.Elapsed() / 1000;
+    printf("\n\n === Next buffer read ===\n");
+    } //RD: 'buf_count > 0' loop ends here
+
+    timer_var.Start();
+
+    while(runner.next(dump_to_disk, dump_to_user, output)) {
+      LOG(log_level::notice, "Pipeline running over next chunk.");
+
+      for(size_t i = 0; i < output.size(); i++) {
+	std::cout << " dm_low " << output.at(i).dm_low << " dm_high " << output.at(i).dm_high << std::endl;
+	for(size_t j = 0; j < output.at(i).pulses.size(); j++) {
+	  analysis_pulse p = output.at(i).pulses.at(j);
+	  std::cout << "dispersion measure " << p.dispersion_measure	 << " time " << p.time << " snr " << p.snr << " pulse_width " << p.pulse_width << std::endl;
 	}
+      }
+    }
 
-	output_file.close();
-}
+    timer_var.Stop();
+    time_buf_process = timer_var.Elapsed() / 1000;
+    printf("\n\n === Buffer processed ===\n");
 
-int main(int argc, const char *argv[]) {
-        if (argc != 2) {
-                LOG(log_level::notice, "Not enough arguments. To run type: ./examples_dedispersion_and_analysis <path to the fil file>.");
-                return 0;
-        }
-	//-------------- Select de-dispersion plan
-	aa_ddtr_plan ddtr_plan;
-	ddtr_plan.add_dm(0, 370, 0.307, 1, 1); // Add dm_ranges: dm_low, dm_high, dm_step, inBin, outBin (unused).
-	ddtr_plan.add_dm(370, 740, 0.652, 2, 2);
-	ddtr_plan.add_dm(740, 1480, 1.266, 4, 4);
-	ddtr_plan.add_dm(1480, 2950, 25.12, 8, 8);
-	ddtr_plan.add_dm(2950, 5000, 4.000, 16, 16);
-	//--------------<
-	
-	// Filterbank metadata
-	aa_sigproc_input filterbank_datafile(argv[1]);
-	aa_filterbank_metadata metadata = filterbank_datafile.read_metadata();
-	filterbank_datafile.read_signal();
 
-	aa_device_info& device_info = aa_device_info::instance();
-	aa_device_info::CARD_ID selected_card_number = 0;
-	aa_device_info::aa_card_info selected_card_info; 
-        device_info.init_card(selected_card_number, selected_card_info);
 
-	//-------------- Configure pipeline. Select components and their options
-	aa_pipeline::pipeline pipeline_components;
-	pipeline_components.insert(aa_pipeline::component::dedispersion); // pipeline must always contain dedispersion step
-        pipeline_components.insert(aa_pipeline::component::analysis); //optional
-        //pipeline_components.insert(aa_pipeline::component::periodicity); // optional
-        //pipeline_components.insert(aa_pipeline::component::fdas); // optional
-	
-	aa_pipeline::pipeline_option pipeline_options;
-		pipeline_options.insert(aa_pipeline::component_option::msd_baseline_noise);
-	//--------------<
-	
-	//-------------- Configure single pulse detection plan and calculate strategy
-	const float sigma_cutoff = 6.0;
-	const float sigma_constant = 4.0;
-	const float max_boxcar_width_in_sec = 0.5;
-	const bool  enable_MSD_outlier_rejection = true;
-	aa_analysis_plan::selectable_candidate_algorithm candidate_algorithm = aa_analysis_plan::selectable_candidate_algorithm::peak_find;
+// creating python output file name
+    printf("\n RA: %f DEC: %f MJD: %f \n", filterbank_metadata.src_raj(), filterbank_metadata.src_dej(), filterbank_metadata.tstart());
 
-	aa_pipeline_api<unsigned short> pipeline_runner(pipeline_components, pipeline_options, metadata, filterbank_datafile.input_buffer().data(), selected_card_info);
+    stream << buf_count;
+    s_bcount = stream.str();
+    stream.str(std::string());
+    stream.clear();
 
-	pipeline_runner.bind(ddtr_plan);
-       
-	aa_analysis_plan analysis_plan(pipeline_runner.ddtr_strategy(), sigma_cutoff, sigma_constant, max_boxcar_width_in_sec, candidate_algorithm, enable_MSD_outlier_rejection);
-	pipeline_runner.bind(analysis_plan);
+    stream << std::fixed << std::setprecision(1) << filterbank_metadata.src_raj();
+    s_ra = stream.str();
+    stream.str(std::string());
+    stream.clear();
 
-	if (pipeline_runner.ready()) {
-		LOG(log_level::notice, "Pipeline is ready.");
-	}
-	else {
-		LOG(log_level::notice, "Pipeline is not ready.");
-	}
-	
-	
+    stream << std::fixed << std::setprecision(0) << filterbank_metadata.src_dej();
+    s_dec = stream.str();
+    stream.str(std::string());
+    stream.clear();
 
-	//------------- Run the pipeline
-	size_t SPD_nCandidates; // number of candidates found in single pulse detection
-	unsigned int* SPD_candidates_dm;
-	unsigned int* SPD_candidates_timesample;
-	unsigned int* SPD_candidates_width;
-	float* SPD_candidates_snr;
-	int c_range, c_tchunk;
-	long int timesamples_processed_sofar;
-	aa_pipeline_runner::status status_code;
-	while(pipeline_runner.run(status_code)){
-		if ((int)status_code == 1){
-			SPD_nCandidates = pipeline_runner.SPD_nCandidates();
-			SPD_candidates_dm = pipeline_runner.h_SPD_dm();
-			SPD_candidates_timesample = pipeline_runner.h_SPD_ts();
-			SPD_candidates_snr = pipeline_runner.h_SPD_snr();
-			SPD_candidates_width = pipeline_runner. h_SPD_width();
-			c_range = pipeline_runner.get_current_range();
-			c_tchunk = pipeline_runner.get_current_tchunk();
-			timesamples_processed_sofar = pipeline_runner.get_current_inc();
-			write_scale_candidates(metadata, pipeline_runner, timesamples_processed_sofar, SPD_nCandidates, SPD_candidates_dm, SPD_candidates_timesample, SPD_candidates_snr, SPD_candidates_width, c_range, c_tchunk);		
-			printf("Current range:%d; Current time chunk:%d; Time samples proceesed by pipeline so far:%zu;\n", c_range, c_tchunk, timesamples_processed_sofar);
-		}
-	}
-	//-------------<
-	
-	std::cout << "NOTICE: Finished." << std::endl;
+    stream << std::fixed << std::setprecision (ss) <<filterbank_metadata.tstart();
+    s_mjd = stream.str();
+    stream.str(std::string());
+    stream.clear();
 
-	return 0;
+    stream << std::fixed << std::setprecision (ss) <<tsamp_unique;
+    s_tsamp_unique = stream.str();
+    stream.str(std::string());
+    stream.clear();
+
+    printf("\n After setting precision and string conversion: RA: %s DEC: %s MJD: %s buf_count: %s \n", s_ra.c_str(), s_dec.c_str(), s_mjd.c_str(), s_bcount.c_str());
+
+//    py_fname = "python /home/guest/abhinav/FRB_pipeline/src/pycodes/spsplotii_frb_detect.py global_peaks.dat"; // --bc 0 --ra 2.5 --dec -36 --mjd 55.5";
+    py_fname = "python "; // --bc 0 --ra 2.5 --dec -36 --mjd 55.5";
+    py_fname += configpath_name;
+    py_fname += "spsplotii_frb_detect.py global_peaks.dat";
+    py_fname += " --mjd " + s_mjd + " --ra " + s_ra + " --dec " + s_dec + " --bc " + s_bcount + " --buf_t " + s_tsamp_unique;
+    printf("\n py_fname: %s \n", py_fname.c_str());
+
+//
+//  } // end of setup condition pushed below---------------------------------------------------------------
+
+
+    // writing output files and running python script
+    timer_var.Start();
+
+     sysint1 = system("cat peak* > global_peaks.dat");
+     sysint2 = system("cat analysed* > global_analysed_frb.dat");
+     sysint3 = system("cat fourier-* > global_periods.dat");
+     sysint4 = system("cat fourier_inter* > global_interbin.dat");
+     sysint5 = system("cat harmo* > global_harmonics.dat");
+     sysint6 = system("cat candidate* > global_candidates.dat");
+//     sysint = system("python /home/guest/abhinav/FRB_pipeline/src/pycodes/spsplotii_frb_detect.py global_peaks.dat --ls 1.0 --bc 0 --ra 2.5 --dec -36 --mjd 55.5 --auto True > FRB_detection.dat");
+     sysint = system(py_fname.c_str());
+
+     printf("\nOutput files written\n");
+
+// if test_flg is true, it will save every global_peaks.dat file from every buffer    
+     if (test_flg)
+     {
+     cat_cmnd = "cat peak* > ./test/bcount" + s_bcount + "/global_peaks.dat";
+     printf("\n Concatenation command:: %s \n", cat_cmnd.c_str());
+     sysint2 = system(cat_cmnd.c_str());
+     }
+
+/*    if (buf_count == 0) 	sysint2 = system("cat peak* > ../test/bcount0/global_peaks.dat");
+    if (buf_count == 1) 	sysint2 = system("cat peak* > ../test/bcount1/global_peaks.dat");
+    if (buf_count == 2) 	sysint2 = system("cat peak* > ../test/bcount2/global_peaks.dat");
+    if (buf_count == 3) 	sysint2 = system("cat peak* > ../test/bcount3/global_peaks.dat");
+    if (buf_count == 4) 	sysint2 = system("cat peak* > ../test/bcount4/global_peaks.dat");
+//    if (buf_count == 3) 	sysint2 = system("cat peak* > ../test/bcount3/global_peaks.dat");
+    if (buf_count == 0) 	sysint2 = system("cat peak* > ./test/bcount0/global_peaks.dat");
+    if (buf_count == 1) 	sysint2 = system("cat peak* > ./test/bcount1/global_peaks.dat");
+    if (buf_count == 2) 	sysint2 = system("cat peak* > ./test/bcount2/global_peaks.dat");
+    if (buf_count == 3) 	sysint2 = system("cat peak* > ./test/bcount3/global_peaks.dat");
+    if (buf_count == 4) 	sysint2 = system("cat peak* > ./test/bcount4/global_peaks.dat");
+*/
+    
+//     runner.cleanup();
+
+    timer_var.Stop();
+    time_conc_files_find_frb = timer_var.Elapsed() / 1000;
+    printf("\n\n === Output files created | Concatenated | Python script ran ===\n");
+
+   if (buf_count == 0) 
+   {
+     printf("\n--------------------- Timing information after processing first buffer ---------------------\n");
+     printf("\n Time to read first buffer: %f (GPU estimate) \n", time_first_read);
+     printf("\n Time to process buffer number %d: %f (GPU estimate) \n", buf_count, time_buf_process);
+     printf("\n Time to concatenate files and run python script for buffer number %d: %f (GPU estimate) \n", buf_count, time_conc_files_find_frb);
+     printf("\n--------------------------------------------------------------------------------------------\n");
+   }
+   else
+   {
+     printf("\n--------------------- Timing information after processing new buffer ---------------------\n");
+     printf("\n Time to read buffer number %d: %f (GPU estimate) \n", buf_count, time_buf_read);
+     printf("\n Time to process buffer number %d: %f (GPU estimate) \n", buf_count, time_buf_process);
+     printf("\n Time to concatenate files and run python script for buffer number %d: %f (GPU estimate) \n", buf_count, time_conc_files_find_frb);
+     printf("\n-------------------------------------------------------------------------------------------\n");
+   }
+
+
+  }// setup condition ends here ------------------------------------------------------------------------------
+
+  }// buf_count loop ends here ----------------------------------------------------------------------------------
+
+
+  timer_var_total.Stop();
+  time_total = timer_var_total.Elapsed() / 1000;
+
+  printf("\n------------------------------- Final Timing Information  ---------------------------------\n");
+  printf("\n Total number of buffers processed: %d \n", buf_count);
+  printf("\n Total number of time samples processed uniquely: %d \n", buf_count*nsamp_ovrlp_pt);
+  printf("\n Total telescope time processed: %f (GPU estimate) \n", buf_count*nsamp_ovrlp_pt*tsamp);
+  printf("\n Total time taken: %f (GPU estimate) \n", time_total);
+  printf("\n Total Real-time speedup factor: %f \n",  (buf_count*nsamp_ovrlp_pt*tsamp) / ( time_total ));
+  printf("\n-------------------------------------------------------------------------------------------\n");
+
+ 
+  LOG(log_level::notice, "Finished.");
+  return 0;
+} //runner()function ends here
+std::string timestamp(std::string source_fname)
+{
+    std::string command_part = "stat -c '%y' ";
+    command_part += source_fname;
+// checking the last modified time of source.hdr ---------------------------------------------------
+    std::string command = "stat -c '%y' ";
+    command += source_fname;
+
+//    std::string command("pwd");
+
+    std::array<char, 128> buffer;
+    std::string result, result_tmp;
+
+    std::cout << "Inside timestamp function: Opening reading pipe" << std::endl;
+    FILE* pipe = popen(command.c_str(), "r");
+    if (!pipe)
+    {
+        std::cerr << "Couldn't start command." << std::endl;
+        return 0;
+    }
+    while (fgets(buffer.data(), 128, pipe) != NULL) {
+        std::cout << "Reading timestamp" << std::endl;
+        result += buffer.data();
+        result_tmp += buffer.data();
+    }
+    auto returnCode = pclose(pipe);
+
+    std::cout << result << std::endl;
+    std::cout << returnCode << std::endl;
+    return result;
+// check complete ----------------------------------------------------------------------------------
+
 }

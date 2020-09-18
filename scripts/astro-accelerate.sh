@@ -6,6 +6,9 @@
 # Usage:       The input is the name of the input_file to use.
 # Usage:       The second input is the directory where the output should go.
 # Notice:      N/A.
+
+# Notice:      To run the script with examples/src/dedispersion_and_analysis.cpp:
+# Notice:      ./astro-accelerate.sh ../input_files/GMRT.SPS.10m.txt /home/guest/abhinav/FRB_pipeline-1.7.10/output > log_file.txt 
 ################################################################################
 
 #!/usr/bin/env bash
@@ -19,9 +22,14 @@ job_name=$(basename "$1" .txt)
 
 # The current directory is assumed to contain the executable
 executable_directory=${ASTRO_ACCELERATE_EXECUTABLE_PATH}
+#executable_directory=${ASTRO_ACCELERATE_EXECUTABLE_PATH}/home/guest/abhinav/FRB_pipeline-1.7.10/examples/src
+# following is used on TAPTI server::
+# executable_directory=${ASTRO_ACCELERATE_EXECUTABLE_PATH}/Data/rraj/abhinav/FRB_pipeline-1.7.10/examples/src
+
 
 # Job output will be stored within a subfolder of the specified directory
-output_dir=${2}/output/${job_name}
+#output_dir=${2}/output/${job_name}
+output_dir=${2}/${job_name}
 
 # Create the job directory
 mkdir -p ${output_dir}
@@ -29,6 +37,8 @@ mkdir -p ${output_dir}
 # The executable output defaults to the current directory
 # So, switch to the output directory
 cd ${output_dir}
+
+echo $executable_directory
 
 # Remove existing output files, if they exist
 rm -f analysed* 
@@ -49,32 +59,34 @@ echo "The output directory path is " ${output_dir}
 cd ${output_dir}
 
 # Run the executable
-time ${executable_directory}/astro-accelerate ${input_file}
+# time ${executable_directory}/astro-accelerate ${input_file}
+time ${executable_directory}/examples_dedispersion_and_analysis ${input_file}
 
 # Test if output file exists, and combine into a single file
 # If not found, do nothing, and write the return code of ls to /dev/null
-if ls analysed* 1> /dev/null 2>&1; then
-    cat analysed* > global_analysed_frb.dat
-fi
 
-if ls fourier-* 1> /dev/null 2>&1; then
-    cat fourier-* > global_periods.dat
-fi
+#if ls analysed* 1> /dev/null 2>&1; then
+#    cat analysed* > global_analysed_frb.dat
+#fi
 
-if ls fourier_inter* 1> /dev/null 2>&1; then
-    cat fourier_inter* > global_interbin.dat
-fi
+#if ls fourier-* 1> /dev/null 2>&1; then
+#    cat fourier-* > global_periods.dat
+#fi
 
-if ls harmo* 1> /dev/null 2>&1; then
-    cat harmo* > global_harmonics.dat
-fi
+#if ls fourier_inter* 1> /dev/null 2>&1; then
+#    cat fourier_inter* > global_interbin.dat
+#fi
 
-if ls candidate* 1> /dev/null 2>&1; then
-    cat candidate* > global_candidates.dat
-fi
+#if ls harmo* 1> /dev/null 2>&1; then
+#    cat harmo* > global_harmonics.dat
+#fi
 
-if ls peak* 1> /dev/null 2>&1; then
-    cat peak* > global_peaks.dat
-fi
+#if ls candidate* 1> /dev/null 2>&1; then
+#    cat candidate* > global_candidates.dat
+#fi
+
+#if ls peak* 1> /dev/null 2>&1; then
+#    cat peak* > global_peaks.dat
+#fi
 
 echo "Finished. Output is located in "${output_dir}

@@ -69,6 +69,9 @@ namespace astroaccelerate {
       return false;
     }
 
+
+
+
     /** \brief Override base class next() method to process next time chunk. */
     bool next() override {
       bool dump_to_disk = true;
@@ -95,7 +98,7 @@ namespace astroaccelerate {
     }
 
     /** \brief Process next time chunk with index chunk_idx, and set the time chunk dedispersed data in output_buffer. */
-    bool next(const bool dump_to_disk, const bool dump_to_user, std::vector<analysis_output> &output) {
+    bool next(const bool dump_to_disk, const bool dump_to_user, std::vector<analysis_output> &output) {//called by while loop in dedispersion
       if(memory_allocated) {
 	aa_pipeline_runner::status tmp;
 	return run_pipeline(dump_to_disk, dump_to_user, output, tmp);
@@ -112,10 +115,11 @@ namespace astroaccelerate {
 
       return false;
     }
-    
     /** \brief De-allocate memory for this pipeline instance. */
     bool cleanup() {
       if(memory_allocated && !memory_cleanup) {
+
+        printf("\n about to run clean up \n");
 	cudaFree(d_input);
 	cudaFree(d_output);
 
@@ -138,6 +142,14 @@ namespace astroaccelerate {
       }
       return true;
     }
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------
+    /** \brief Method that allocates all memory for this pipeline. */
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
   private:
     float              ***m_output_buffer;
     int                **t_processed;
@@ -160,6 +172,8 @@ namespace astroaccelerate {
     int                maxshift_original;
     size_t             range;
     float              tstart_local;
+    //float              nsamp_local;   // added by abhinav
+    int                count_bf_count; // added by abhinav
 
     unsigned short     *d_input;
     float              *d_output;
@@ -236,7 +250,7 @@ namespace astroaccelerate {
     void allocate_memory_cpu_output() {
       size_t estimate_outputbuffer_size = 0;
       size_t outputsize = 0;
-      const size_t range = m_ddtr_strategy.get_nRanges();
+      const size_t range = m_ddtr_strategy.range();
       const int *ndms = m_ddtr_strategy.ndms_data();
 
       for(size_t i = 0; i < range; i++) {
@@ -289,8 +303,17 @@ namespace astroaccelerate {
       tsamp                           = m_ddtr_strategy.metadata().tsamp();
       tsamp_original                  = tsamp;
       maxshift_original               = maxshift;
-      range                           = m_ddtr_strategy.get_nRanges();
+      range                           = m_ddtr_strategy.range();
       tstart_local                    = 0.0;
+      //nsamp_local                     = m_ddtr_strategy.metadata().nsamples();
+      count_bf_count		      = 0;  					// addded by abhinav
+
+      printf("\n m_ddtr_strategy.metadata().nsamp(): : : %d \n",m_ddtr_strategy.metadata().nsamples());
+      printf("\n m_ddtr_strategy.metadata().nchans(): : : %d \n",m_ddtr_strategy.metadata().nchans());
+      printf("\n m_ddtr_strategy.metadata().tsamp(): : : %f \n",m_ddtr_strategy.metadata().tsamp());
+      
+// condition below added to avoid re-allocation of memory resources evertime an input buffer is read::
+//      if (m_ddtr_strategy.metadata().strat() != 1) {
 
       //Allocate GPU memory
       d_input                         = NULL;
@@ -305,12 +328,14 @@ namespace astroaccelerate {
       
       //Allocate memory for CPU output for output buffer
       allocate_memory_cpu_output();
+
+//      } // if strat condition ends here ---------------------------------------------------------------------------
       
-      dm_low.resize(m_ddtr_strategy.get_nRanges());
-      dm_high.resize(m_ddtr_strategy.get_nRanges());
-      dm_step.resize(m_ddtr_strategy.get_nRanges());
-      inBin.resize(m_ddtr_strategy.get_nRanges());
-      for(size_t i = 0; i < m_ddtr_strategy.get_nRanges(); i++) {
+      dm_low.resize(m_ddtr_strategy.range());
+      dm_high.resize(m_ddtr_strategy.range());
+      dm_step.resize(m_ddtr_strategy.range());
+      inBin.resize(m_ddtr_strategy.range());
+      for(size_t i = 0; i < m_ddtr_strategy.range(); i++) {
 	dm_low[i]   = m_ddtr_strategy.dm(i).low;
 	dm_high[i]  = m_ddtr_strategy.dm(i).high;
 	dm_step[i]  = m_ddtr_strategy.dm(i).step;
@@ -320,7 +345,7 @@ namespace astroaccelerate {
       return true;
     }
 
-    /** \brief Transfer data from the device to the host. */
+    /** \brief Transfer data from the device to the host. */ //RD(The below type was changed from int to size_t)
     inline void save_data_offset(float *device_pointer, int device_offset, float *host_pointer, int host_offset, size_t size) {
       cudaMemcpy(host_pointer + host_offset, device_pointer + device_offset, size, cudaMemcpyDeviceToHost);
     }
@@ -337,14 +362,20 @@ namespace astroaccelerate {
      */
     bool run_pipeline(const bool dump_to_disk, const bool dump_to_user, std::vector<analysis_output> &user_output, aa_pipeline_runner::status &status_code) {
       printf("NOTICE: Pipeline start/resume run_pipeline_2.\n");
+      printf("\n time is: > : %d \n", t);
       if(t >= num_tchunks) {
+        count_bf_count = count_bf_count + 1;
+        printf("\n count_bf_count :: %d \n", count_bf_count);
+        
 	m_timer.Stop();
         float time = m_timer.Elapsed() / 1000;
         printf("\n\n === OVERALL DEDISPERSION THROUGHPUT INCLUDING SYNCS AND DATA TRANSFERS ===\n");
         printf("\n(Performed Brute-Force Dedispersion: %g (GPU estimate)", time);
         printf("\nAmount of telescope time processed: %f", tstart_local);
+        //printf("\nAmount of telescope time read: %f", nsamp_local*tsamp_original);
         printf("\nNumber of samples processed: %ld", inc);
         printf("\nReal-time speedup factor: %lf\n", ( tstart_local ) / time);
+//        printf("\nReal-time speedup factor: %lf\n", ( nsamp_local*tsamp_original ) / time);
 
 #ifdef EXPORT_DD_DATA
 	size_t DMs_per_file = Calculate_sd_per_file_from_file_size(1000, inc, 1);
@@ -354,12 +385,20 @@ namespace astroaccelerate {
 	}
 	LOG(log_level::dev_debug, "Exporting dedispersion data...");
 	LOG(log_level::dev_debug, "  DM per file: " + std::to_string(DMs_per_file));
-
+        
 	const int *ndms = m_ddtr_strategy.ndms_data();
 	Export_DD_data((int)range, m_output_buffer, (size_t)inc, ndms, inBin.data(), "DD_data", ranges_to_export, (int)DMs_per_file);
 	delete ranges_to_export;
 #endif
 	status_code = aa_pipeline_runner::status::finished;
+
+// more edits - abhinav ---------------------------------------------------------
+      t = 0;
+      inc = 0;
+      tstart_local=0;
+
+// edits end --------------------------------------------------------------------
+
 	return false; // In this case, there are no more chunks to process.	
       }
       else if(t == 0) {
@@ -369,9 +408,10 @@ namespace astroaccelerate {
       printf("\nNOTICE: t_processed:\t%d, %d", t_processed[0][t], t);
 
       const int *ndms = m_ddtr_strategy.ndms_data();
+      printf("\n ## %hu ##\n", m_input_buffer[0]);
 
       //checkCudaErrors(cudaGetLastError());
-      load_data(-1, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[0][t], maxshift, nchans, dmshifts, NULL);
+      load_data(-1, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[0][t], maxshift, nchans, dmshifts);
       //checkCudaErrors(cudaGetLastError());
 
       if(zero_dm_type == aa_pipeline::component_option::zero_dm) {
@@ -411,10 +451,11 @@ namespace astroaccelerate {
 
 	maxshift = maxshift_original / inBin[dm_range];
 
+
 	cudaDeviceSynchronize();
 	//checkCudaErrors(cudaGetLastError());
 
-	load_data(dm_range, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[dm_range][t], maxshift, nchans, dmshifts, NULL);
+	load_data(dm_range, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[dm_range][t], maxshift, nchans, dmshifts);
 
 	//checkCudaErrors(cudaGetLastError());
 
@@ -426,16 +467,23 @@ namespace astroaccelerate {
 
 	//checkCudaErrors(cudaGetLastError());
 
-	dedisperse(dm_range, t_processed[dm_range][t], inBin.data(), dmshifts, d_input, d_output, NULL, nchans, &tsamp, dm_low.data(), dm_step.data(), ndms, nbits, failsafe);
+	dedisperse(dm_range, t_processed[dm_range][t], inBin.data(), dmshifts, d_input, d_output, nchans, &tsamp, dm_low.data(), dm_step.data(), ndms, nbits, failsafe);
 
 	//checkCudaErrors(cudaGetLastError());
 
-	if(dump_to_user) {
+
+	if(dump_to_user) {//Chnges here in the next version version RD
 	  for (int k = 0; k < ndms[dm_range]; k++) {
+//            printf("\n ndms[dm_range]: %d t_processed[dm_range][t]: %f m_output_buffer[dm_range][k]: %f\n", ndms[dm_range], t_processed[dm_range][t], m_output_buffer[dm_range][k]);
+//            printf("\n inc / inBin[dm_range]: %f \n", inc / inBin[dm_range]);
+
 	    save_data_offset(d_output, k * t_processed[dm_range][t], m_output_buffer[dm_range][k], inc / inBin[dm_range], sizeof(float) * t_processed[dm_range][t]);
 	  }
 	}
 	
+        printf("\n #$# %f \n", ***m_output_buffer);
+//        printf("\n #$# %f \n", *d_output);
+
 	//Add analysis
 	unsigned int *h_peak_list_DM;
 	unsigned int *h_peak_list_TS;
@@ -489,25 +537,27 @@ namespace astroaccelerate {
 	  user_output[dm_range] = analysis_output_for_this_dm;
 	}
 
-	free(h_peak_list_DM);
+/*	free(h_peak_list_DM);
 	free(h_peak_list_TS);
 	free(h_peak_list_SNR);
 	free(h_peak_list_BW);
-	
+*/	
 	oldBin = inBin[dm_range];
       }
+
       
       inc = inc + t_processed[0][t];
       printf("\nNOTICE: INC:\t%ld\n", inc);
       tstart_local = ( tsamp_original * inc );
       tsamp = tsamp_original;
       maxshift = maxshift_original;
+      printf("tstart_local: %f \n tsamp:%f \n maxshift:%d",tstart_local, tsamp, maxshift);
 
       ++t;
       printf("NOTICE: Pipeline ended run_pipeline_2 over chunk %d / %d.\n", t, num_tchunks);
       status_code = aa_pipeline_runner::status::has_more;
       return true;
-    }    
+    }
   };
 
   template<> inline aa_permitted_pipelines_2<aa_pipeline::component_option::zero_dm, false>::aa_permitted_pipelines_2(const aa_ddtr_strategy &ddtr_strategy,

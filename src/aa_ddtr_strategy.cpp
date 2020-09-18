@@ -2,9 +2,9 @@
 
 #include "aa_device_info.hpp"
 
-//#define MAX_OUTPUT_SIZE 8589934592
-//#define MAX_OUTPUT_SIZE 12884901888
-#define MAX_OUTPUT_SIZE 17179869184
+#include <cstring>
+
+#define MAX_OUTPUT_SIZE 8589934592
 
 namespace astroaccelerate {
   /**
@@ -29,12 +29,121 @@ namespace astroaccelerate {
      * This method relies on defining points when nsamps is a multiple of
      * nchans - bin on the diagonal or a fraction of it.
      */
+
+    printf("\n 1. in aa_ddtr_strategy.cpp :: m_metadata.strat(): %d \n", m_metadata.strat());
+
     if(m_strategy_already_calculated) {
-      LOG(log_level::notice, "Strategy already calculated.");
+//    if(m_strategy_already_calculated || m_metadata.strat()) { 						// also my addition -- abhinav
+
+/*      m_ready = true;											// look right below
+      m_strategy_already_calculated = true;								// my additions  -- abhinav
+      printf("\n 2. in aa_ddtr_strategy.cpp :: m_metadata.strat(): %d \n", m_metadata.strat());		// look right above
+
+
+      FILE * pFile;
+      pFile = fopen ("myfile.txt","r");
+
+      char strat_line[512], tempo_val[400];
+      int range, scruch_value;
+      float max_disp_delay, diagonal_dm;
+//      const size_t range;
+
+      while (fgets(strat_line, sizeof(strat_line), pFile)) {
+        printf("\n **-*-** %.35s \n", strat_line);
+
+        strcpy(tempo_val, &strat_line[17]);	
+        if (strncmp(strat_line, "m_maxshift     : ", 17) == 0 )              // Time stamp of first sample (MJD) 
+		{
+		m_maxshift = strtol(tempo_val, NULL, 10);
+		printf("\n m_masxshift from file: %s :: %d \n", tempo_val, m_maxshift);
+		}
+        if (strncmp(strat_line, "m_max_ndms     : ", 17) == 0 )              // Time stamp of first sample (MJD) 
+		{
+		m_max_ndms = strtol(tempo_val, NULL, 10);
+		printf("\n m_max_ndms from file: %s :: %d \n", tempo_val, m_max_ndms);
+		}
+        if (strncmp(strat_line, "range          : ", 17) == 0 )              // Time stamp of first sample (MJD) 
+		{
+		range = strtol(tempo_val, NULL, 10);
+		printf("\n range from file: %s :: %d \n", tempo_val, range);
+		}
+        if (strncmp(strat_line, "scrunch value  : ", 17) == 0 )              // Time stamp of first sample (MJD) 
+		{
+		scruch_value = strtol(tempo_val, NULL, 10);
+		printf("\n scrunch value: %s :: %d \n", tempo_val, scruch_value);
+		}
+
+        if (strncmp(strat_line, "Max disp delay : ", 17) == 0 )              // Time stamp of first sample (MJD) 
+		{
+		max_disp_delay = strtof(tempo_val, NULL);
+		printf("\n Max disp delay: %s :: %f \n", tempo_val, max_disp_delay);
+		}
+        if (strncmp(strat_line, "Diagonal DM    : ", 17) == 0 )              // Time stamp of first sample (MJD) 
+		{
+		diagonal_dm = strtof(tempo_val, NULL);
+		printf("\n Diagonal DM: %s :: %f \n", tempo_val, diagonal_dm);
+		}
+
+
+        if (strncmp(strat_line, "m_num_tchunks  : ", 17) == 0 )              // Time stamp of first sample (MJD) 
+		{
+		m_num_tchunks = strtol(tempo_val, NULL, 10);
+		printf("\n m_num_tchunks: %s :: %d \n", tempo_val, m_num_tchunks);
+		}
+        if (strncmp(strat_line, "dm limits ndm  : ", 17) == 0 )              // Time stamp of first sample (MJD) 
+		{
+//		printf("\n (l,h,s,i,o,n)  :: is > %s \n", tempo_val);
+                float tmp_low, tmp_high, tmp_step;
+                int tmp_inBin, tmp_outBin, tmp_ndms;
+                char* ptr_line;
+                for(size_t i = 0; i < range; i++) {
+/*		  str_dm[i].low = strtof(tempo_val, &ptr_line);
+		  str_dm[i].high = strtof(ptr_line, &ptr_line);
+		  str_dm[i].step = strtof(ptr_line, &ptr_line);
+		  str_dm[i].inBin = strtol(ptr_line, &ptr_line,10);
+		  str_dm[i].outBin = strtol(ptr_line, &ptr_line,10);
+		  m_ndms[i] = strtol(ptr_line, &ptr_line,10);
+*/
+//		  str_dm[i].low = strtof(tempo_val, NULL);
+//	          fprintf (pFile, "%f %f %f %d %d %d\t",str_dm[i].low,str_dm[i].high,str_dm[i].step, str_dm[i].inBin,str_dm[i].outBin,m_ndms[i]);
+/*		  printf("\n (l,h,s,i,o,n)  :  %f ::::::: %f \n", tmp_low, tmp_high);
+		  printf("\n (l,h,s,i,o,n)  :  %f ::::::: %d \n", tmp_step, tmp_ndms);
+ 		  printf("\n (l,h,s,i,o,n)  :  %d ::::::: %d \n", tmp_inBin, tmp_outBin); 
+*/
+//                  }
+//		}
+
+
+
+//           fprintf (pFile, "m_num_tchunks  : %d \n", m_num_tchunks);
+//           fprintf (pFile, "remainder      : %d \n", remainder);
+/*	   fprintf (pFile, "(l,h,s,i,o,n)  : ");
+           for(size_t i = 0; i < range; i++) {
+           const aa_ddtr_plan::dm tmp = dm(i);
+	   fprintf (pFile, "%f %f %f %d %d %d\t",tmp.low,tmp.high,tmp.step, tmp.inBin,tmp.outBin,ndms(i));
+           }
+           fprintf(pFile, "\n");
+           fprintf (pFile, "t_procsd i j   : %d %d \n", t_processed().size(), t_processed().at(0).size());
+           fprintf (pFile, "t_procsd arr   : ");
+           for(size_t i = 0; i < t_processed().size(); i++) {
+	     for(size_t j = 0; j < t_processed().at(i).size(); j++) {
+               fprintf (pFile, "%d ", t_processed()[i][j]);
+             }
+           }
+           fprintf(pFile, "\n");
+*/
+
+/*
+      }
+
+      fclose (pFile);
+
+*/
+      LOG(log_level::notice, "Strategy already calculated.");  // previous code ------------------------- 
       return true;
     }
 
-    LOG(log_level::notice, "Calculating strategy.");
+    LOG(log_level::notice, "Calculating strategy."); //RD: What does it do?
 	    
     //Part of the filterbank metadata
     const int nchans  = m_metadata.nchans();
@@ -42,6 +151,13 @@ namespace astroaccelerate {
     const float fch1  = m_metadata.fch1();
     const float foff  = m_metadata.foff();
     const float tsamp = m_metadata.tsamp();
+
+    printf("nchans :: %d\n",nchans);
+    printf("nsamp :: %d\n",nsamp);
+    printf("tsamp :: %f\n",tsamp);
+    printf("fch1 :: %f\n",fch1);
+    printf("foff :: %f\n",foff);
+
     
     if(!plan.range()) {
       //No user requested dm settings have been added, this is an invalid aa_ddtr_plan.
@@ -50,6 +166,7 @@ namespace astroaccelerate {
     
     //Plan requested DM settings
     const size_t range = plan.range();
+    printf("\n range:: >> %d \n", range);
     m_ndms.resize(range);
     
     m_dmshifts.resize(nchans);
@@ -57,7 +174,8 @@ namespace astroaccelerate {
     //Strategy set DM settings
     str_dm.resize(range);
 
-    const size_t gpu_memory = free_memory; // - 1073741824;
+    const size_t gpu_memory = free_memory;
+    printf("\n gpu_memory %d\n", gpu_memory);
     
     const double SPDT_fraction = 3.0/4.0; // 1.0 for MSD plane profile validation
     //Calculate maxshift, the number of dms for this bin and the highest value of dm to be calculated in this bin
@@ -77,43 +195,37 @@ namespace astroaccelerate {
     for(int i = 0; i < (int)range; i++)    {
       float n;
       modff(      ( ( (int) ( (  plan.user_dm(i).high - plan.user_dm(i).low ) / plan.user_dm(i).step ) + SDIVINDM ) / SDIVINDM )     , &n); // This calculates number of SDIVINDM blocks per DM range
-      m_ndms[i] = (int) ( (int) n * SDIVINDM ); // This is number of DM trial per DM range
+      m_ndms[i] = (int) ( (int) n * SDIVINDM ); // This is number of DM trial per DM range. SDIVINDM is set to 21 in aa_params.hpp : RD
       if (m_max_ndms < m_ndms[i])
 	m_max_ndms = m_ndms[i]; // looking for maximum number of DM trials for memory allocation
       m_total_ndms = m_total_ndms + m_ndms[i];
     }
-    LOG(log_level::dev_debug, "Maximum number of dm trials in any of the range steps: " + std::to_string(m_max_ndms));
+    LOG(log_level::dev_debug, "mmMaximum number of dm trials in any of the range steps: " + std::to_string(m_max_ndms));
     
     str_dm[0].low = plan.user_dm(0).low;                        //
-    str_dm[0].high = str_dm[0].low + ( m_ndms[0] * ( plan.user_dm(0).step ) );   // Redefines DM plan to suit GPU
+    str_dm[0].high = str_dm[0].low + ( m_ndms[0] * ( plan.user_dm(0).step ) );   // Redefines DM plan to suit GPU. //RD:Why needed?
     str_dm[0].step = plan.user_dm(0).step;                      //
-		for (size_t i = 1; i < range; i++) {
-			str_dm[i].low = str_dm[i - 1].high;
-			str_dm[i].high = str_dm[i].low + m_ndms[i]*plan.user_dm(i).step;
-			str_dm[i].step = plan.user_dm(i).step;
-
-			if (plan.user_dm(i - 1).inBin > 1) {
-				m_maxshift = (int) ceil(((str_dm[i - 1].low + str_dm[i - 1].step*m_ndms[i - 1])*m_dmshifts[nchans - 1]) / tsamp);
-				
-				float modulo = (float) (SDIVINT*2*SNUMREG);
-				m_maxshift = (int) (( (float) m_maxshift / (float) plan.user_dm(i - 1).inBin + modulo ) / modulo );
-				m_maxshift = m_maxshift*(SDIVINT*2*SNUMREG)*plan.user_dm(i - 1).inBin;
-				if (m_maxshift > m_maxshift_high) {
-					m_maxshift_high = m_maxshift;
-				}
-			}
-		}
+    for (size_t i = 1; i < range; i++)    {
+      str_dm[i].low = str_dm[i-1].high;
+      str_dm[i].high = str_dm[i].low + m_ndms[i] * plan.user_dm(i).step;
+      str_dm[i].step = plan.user_dm(i).step;
+        
+      if (plan.user_dm(i-1).inBin > 1) {
+	m_maxshift = (int) ceil(( ( str_dm[i-1].low + str_dm[i-1].step * m_ndms[i - 1] ) * m_dmshifts[nchans - 1] ) / ( tsamp ));
+	m_maxshift = (int) ceil((float) ( m_maxshift + ( (float) ( SDIVINT*2*SNUMREG ) ) ) / (float) plan.user_dm(i-1).inBin) / (float) ( SDIVINT*2*SNUMREG );
+	m_maxshift = ( m_maxshift ) * ( SDIVINT*2*SNUMREG ) * plan.user_dm(i-1).inBin;
+	if (( m_maxshift ) > m_maxshift_high)
+	  m_maxshift_high = ( m_maxshift );
+      }
+    }//end of for loop.
     
-		if (plan.user_dm(range - 1).inBin > 1) {
-			m_maxshift = (int) ceil( ((str_dm[range - 1].low + str_dm[range - 1].step*m_ndms[range - 1])*m_dmshifts[nchans - 1]) / tsamp );
-
-			float modulo = (float) (SDIVINT*2*SNUMREG);
-			m_maxshift = (int) (((float)m_maxshift / (float)plan.user_dm(range-1).inBin + modulo) / modulo);
-			m_maxshift = m_maxshift*(SDIVINT*2*SNUMREG)*plan.user_dm(range - 1).inBin;
-			if (m_maxshift > m_maxshift_high) {
-				m_maxshift_high = m_maxshift;
-			}
-		}
+    if (plan.user_dm(range-1).inBin > 1) { //it is calculated here
+      m_maxshift = (int) ceil(( ( str_dm[range-1].low + str_dm[range-1].step * m_ndms[range - 1] ) * m_dmshifts[nchans - 1] ) / ( tsamp ));
+      m_maxshift = (int) ceil((float) ( m_maxshift + ( (float) ( SDIVINT*2*SNUMREG ) ) ) / (float) plan.user_dm(range-1).inBin) / (float) ( SDIVINT*2*SNUMREG );
+      m_maxshift = m_maxshift * ( SDIVINT*2*SNUMREG ) * plan.user_dm(range-1).inBin;
+      if (( m_maxshift ) > m_maxshift_high)
+	m_maxshift_high = ( m_maxshift );
+    }
     
     if (m_maxshift_high == 0)    {
       m_maxshift_high = (int) ceil(( ( str_dm[range-1].low + str_dm[range-1].step * ( m_ndms[range - 1] ) ) * m_dmshifts[nchans - 1] ) / tsamp);
@@ -158,13 +270,13 @@ namespace astroaccelerate {
       
       // Check that we dont have an out of range maxshift:
       if ((unsigned int)( m_maxshift ) > max_tsamps)    {
-	LOG(log_level::error, "The selected GPU does not have enough memory for this number of dispersion trials. Reduce maximum dm or increase the size of dm step.");
+	LOG(log_level::error, "1. The selected GPU does not have enough memory for this number of dispersion trials. Reduce maximum dm or increase the size of dm step.");
 	return false;
       }
       
       // Next check to see if nsamp fits in GPU RAM:
       if ((unsigned int)nsamp < max_tsamps)    {
-	// We have case 1)
+	printf("We are in case 1");
 	// Allocate memory to hold the values of nsamps to be processed
 	unsigned long int local_t_processed = (unsigned long int) floor(( (double) ( nsamp - (m_maxshift) ) / (double) plan.user_dm(range-1).inBin ) / (double) ( SDIVINT*2*SNUMREG )); //number of timesamples per block
 	local_t_processed = local_t_processed * ( SDIVINT*2*SNUMREG ) * plan.user_dm(range-1).inBin;
@@ -177,7 +289,7 @@ namespace astroaccelerate {
 	LOG(log_level::dev_debug, "In 1");
       }
       else {
-	// We have case 3)
+	printf("We are in case 3");
 	// Work out how many time samples we can fit into ram
 	int samp_block_size = max_tsamps - ( m_maxshift );
         
@@ -189,60 +301,54 @@ namespace astroaccelerate {
 	int local_t_processed = (int) floor(( (float) ( samp_block_size ) / (float) plan.user_dm(range-1).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
 	local_t_processed = local_t_processed * ( SDIVINT*2*SNUMREG ) * plan.user_dm(range-1).inBin;
         
-	int num_blocks = (int) ( ((float) (nsamp - m_maxshift)) / ((float) local_t_processed) );
+	int num_blocks = (int) floor(( (float) nsamp - (float)( m_maxshift ) )) / ( (float) ( local_t_processed ) );
         
 	// Work out the remaining fraction to be processed
 	int remainder =  nsamp -  (num_blocks*local_t_processed ) - (m_maxshift) ;
 	remainder = (int) floor((float) remainder / (float) plan.user_dm(range-1).inBin) / (float) ( SDIVINT*2*SNUMREG );
 	remainder = remainder * ( SDIVINT*2*SNUMREG ) * plan.user_dm(range-1).inBin;
-	int rem_block = 0;
-	if(remainder>0) rem_block = 1;
         
 	for (size_t i = 0; i < range; i++)    {
-		// Allocate memory to hold the values of nsamps to be processed
-		m_t_processed[i].resize(num_blocks + rem_block);
-		// Remember the last block holds less!
-		for (int j = 0; j < num_blocks; j++) {
-			m_t_processed[i][j] = (int) floor(( (float) ( local_t_processed ) / (float) plan.user_dm(i).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
-			m_t_processed[i][j] = m_t_processed[i][j] * ( SDIVINT*2*SNUMREG );
-		}
-		// fractional bit
-		if(rem_block==1){
-			m_t_processed[i][num_blocks] = (int) floor(( (float) ( remainder ) / (float) plan.user_dm(i).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
-			m_t_processed[i][num_blocks] = m_t_processed[i][num_blocks] * ( SDIVINT*2*SNUMREG );
-		}
+	  // Allocate memory to hold the values of nsamps to be processed
+	  m_t_processed[i].resize(num_blocks + 1);
+	  // Remember the last block holds less!
+	  for (int j = 0; j < num_blocks; j++) {
+	    m_t_processed[i][j] = (int) floor(( (float) ( local_t_processed ) / (float) plan.user_dm(i).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
+	    m_t_processed[i][j] = m_t_processed[i][j] * ( SDIVINT*2*SNUMREG );
+	  }
+	  // fractional bit
+	  m_t_processed[i][num_blocks] = (int) floor(( (float) ( remainder ) / (float) plan.user_dm(i).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
+	  m_t_processed[i][num_blocks] = m_t_processed[i][num_blocks] * ( SDIVINT*2*SNUMREG );
 	}
-	
-	m_num_tchunks = num_blocks + rem_block;
+	( m_num_tchunks ) = num_blocks + 1;
 	LOG(log_level::dev_debug, "In 3");
 	LOG(log_level::dev_debug, "num_blocks:\t" + std::to_string(num_blocks));
       }
     }
     else {
-      // This means that we cannot cornerturn into the allocated output buffer
+      // This means that we cannot cornerturn into the allocated output buffer . Case 2
       // without increasing the memory needed. Set the output buffer to be as large as the input buffer:
       
       // Maximum number of samples we can fit in our GPU RAM is then given by:
       size_t SPDT_memory_requirements = (enable_analysis ? (sizeof(float)*(m_max_ndms)*SPDT_fraction) : 0 );
       max_tsamps = (unsigned int) ( ( gpu_memory ) / ( nchans * ( sizeof(float) + sizeof(unsigned short) )+ SPDT_memory_requirements ));
-	printf("gpu_memory: %zu. Maximum number of tsamp: %d. SPDT: %zu max_ndms: %d\n", gpu_memory, max_tsamps, SPDT_memory_requirements, m_max_ndms);
 	size_t output_size_per_tchunk = ((size_t)max_tsamps)*sizeof(float)*((size_t)nchans);
-	printf("output_sizePer_chunk: %zu\n", output_size_per_tchunk);
 	if (output_size_per_tchunk > MAX_OUTPUT_SIZE) max_tsamps = (unsigned int)((MAX_OUTPUT_SIZE)/(sizeof(float)*nchans));
-	printf("After check tsamp_max: %d\n", max_tsamps);
 
+        printf("\n 2. aa_ddtr_Strategy.cpp:: max_tsamps:: %u m_maxshift:: %d m_max_ndms:: %d\n", max_tsamps, m_maxshift, m_max_ndms);
       
       // Check that we dont have an out of range maxshift:
       if (( m_maxshift ) > (int)max_tsamps) {
-	LOG(log_level::error, "The selected GPU does not have enough memory for this number of dispersion trials. Reduce maximum dm or increase the size of dm step.");
+	LOG(log_level::error, "2. The selected GPU does not have enough memory for this number of dispersion trials. Reduce maximum dm or increase the size of dm step.");
 	return false;
       }
       
       // Next check to see if nsamp fits in GPU RAM:
       if ((unsigned int)nsamp < max_tsamps) {
+        printf("We are in case 2");
 	// We have case 2)
 	// Allocate memory to hold the values of nsamps to be processed
-	int local_t_processed = (int) floor(( (float) ( nsamp - ( m_maxshift ) ) / (float) plan.user_dm(range-1).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
+	int local_t_processed = (int) floor(( (float) ( nsamp - ( m_maxshift ) ) / (float) plan.user_dm(range-1).inBin ) / (float) ( SDIVINT*2*SNUMREG )); //RD : Why is it nsamp-m_maxshift. This is overlap.
 	local_t_processed = local_t_processed * ( SDIVINT*2*SNUMREG ) * plan.user_dm(range-1).inBin;
 	for (size_t i = 0; i < range; i++) {
 	  m_t_processed[i].resize(1);
@@ -253,9 +359,10 @@ namespace astroaccelerate {
 	LOG(log_level::dev_debug, "In 2");
       }
       else {
-	// We have case 4)
+	printf("We are in case 4");
 	// Work out how many time samples we can fit into ram
 	int samp_block_size = max_tsamps - ( m_maxshift );
+        printf("We are in case 4: samp_block_size %d", samp_block_size);
         
 	// Work out how many blocks of time samples we need to complete the processing
 	// upto nsamp-maxshift
@@ -266,30 +373,27 @@ namespace astroaccelerate {
 	local_t_processed = local_t_processed * ( SDIVINT*2*SNUMREG ) * plan.user_dm(range-1).inBin;
         
 	// samp_block_size was not used to calculate remainder instead there is local_t_processed which might be different
-	int num_blocks = (int) ( ((float) (nsamp - m_maxshift)) / ((float) local_t_processed) );
+	int num_blocks = (int) floor(( (float) nsamp - (float) ( m_maxshift ) ) / ( (float) local_t_processed ));
+        printf("No of blocks: %d", num_blocks);
         
 	// Work out the remaining fraction to be processed
 	int remainder = nsamp - ( num_blocks * local_t_processed ) - ( m_maxshift );
 	remainder = (int) floor((float) remainder / (float) plan.user_dm(range-1).inBin) / (float) ( SDIVINT*2*SNUMREG );
 	remainder = remainder * ( SDIVINT*2*SNUMREG ) * plan.user_dm(range-1).inBin;
-	int rem_block = 0;
-	if(remainder>0) rem_block = 1;
         
 	for (size_t i = 0; i < range; i++)    {
-		// Allocate memory to hold the values of nsamps to be processed
-		m_t_processed[i].resize(num_blocks + rem_block);
-		// Remember the last block holds less!
-		for (int j = 0; j < num_blocks; j++) {
-			m_t_processed[i][j] = (int) floor(( (float) ( local_t_processed ) / (float) plan.user_dm(i).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
-			m_t_processed[i][j] = m_t_processed[i][j] * ( SDIVINT*2*SNUMREG );
-		}
-		// fractional bit
-		if(rem_block==1){
-			m_t_processed[i][num_blocks] = (int) floor(( (float) ( remainder ) / (float) plan.user_dm(i).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
-			m_t_processed[i][num_blocks] = m_t_processed[i][num_blocks] * ( SDIVINT*2*SNUMREG );
-		}
+	  // Allocate memory to hold the values of nsamps to be processed
+	  m_t_processed[i].resize(num_blocks + 1);
+	  // Remember the last block holds less!
+	  for (int j = 0; j < num_blocks; j++) {
+	    m_t_processed[i][j] = (int) floor(( (float) ( local_t_processed ) / (float) plan.user_dm(i).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
+	    m_t_processed[i][j] = m_t_processed[i][j] * ( SDIVINT*2*SNUMREG );
+	  }
+	  // fractional bit
+	  m_t_processed[i][num_blocks] = (int) floor(( (float) ( remainder ) / (float) plan.user_dm(i).inBin ) / (float) ( SDIVINT*2*SNUMREG ));
+	  m_t_processed[i][num_blocks] = m_t_processed[i][num_blocks] * ( SDIVINT*2*SNUMREG );
 	}
-	m_num_tchunks = num_blocks + rem_block;
+	( m_num_tchunks ) = num_blocks + 1;
 	LOG(log_level::dev_debug, "In 4");
       }
     }
@@ -308,14 +412,15 @@ namespace astroaccelerate {
     device_info.request((size_t) time_samps * (size_t)nchans * sizeof(unsigned short));
     // gpu_outputsize depends on nchans
     if (nchans < m_max_ndms) {
+      printf("\n nchans :# %d m_max_ndms :# %d \n", nchans, m_max_ndms);
       if(!device_info.request((size_t)time_samps * (size_t)m_max_ndms * sizeof(float))) {
-	std::cout << "ERROR:  Could not request memory." << std::endl;
+	std::cout << "1. ERROR:  Could not request memory." << std::endl;
 	return false;
       }
     }
     else {
       if(!device_info.request((size_t)time_samps * (size_t)nchans * sizeof(float))) {
-	std::cout << "ERROR:  Could not request memory." << std::endl;
+	std::cout << "2. ERROR:  Could not request memory." << std::endl;
 	return false;
       }
     }
@@ -326,6 +431,50 @@ namespace astroaccelerate {
       str_dm.at(i).inBin = plan.user_dm(i).inBin;
       str_dm.at(i).outBin = plan.user_dm(i).outBin;
     }
+
+// additions by abhinav ---------------------writing strategy information to file so as to read it when metadata.strat() == 1 -----------------------------------------------
+/*    if (m_metadata.strat() == 0) {
+
+       FILE * pFile;
+       pFile = fopen ("myfile.txt","w");
+
+       if (pFile!=NULL)
+       {
+           fprintf (pFile, "m_maxshift     : %d \n", m_maxshift);
+           fprintf (pFile, "m_max_ndms     : %d \n", m_max_ndms);
+           fprintf (pFile, "range          : %d \n", (int) range);
+           fprintf (pFile, "scrunch value  : %d \n", plan.user_dm(range-1).inBin);
+           fprintf (pFile, "Max disp delay : %f \n", m_maxshift * tsamp);
+           fprintf (pFile, "Diagonal DM    : %f \n", (tsamp * nchans * 0.0001205 * powf(( fch1 + ( foff * ( nchans / 2 ) ) ), 3.0) ) / ( -foff * nchans ));
+           fprintf (pFile, "m_num_tchunks  : %d \n", m_num_tchunks);
+//           fprintf (pFile, "remainder      : %d \n", remainder);
+	   fprintf (pFile, "dm limits ndm  : ");
+           for(size_t i = 0; i < range; i++) {
+           const aa_ddtr_plan::dm tmp = dm(i);
+	   fprintf (pFile, "%f %f %f %d %d %d ",tmp.low,tmp.high,tmp.step, tmp.inBin,tmp.outBin,ndms(i));
+           }
+           fprintf(pFile, "\n");
+           fprintf (pFile, "t_procsd i j   : %d %d \n", t_processed().size(), t_processed().at(0).size());
+           fprintf (pFile, "t_procsd arr   : ");
+           for(size_t i = 0; i < t_processed().size(); i++) {
+	     for(size_t j = 0; j < t_processed().at(i).size(); j++) {
+               fprintf (pFile, "%d ", t_processed()[i][j]);
+             }
+           }
+           fprintf(pFile, "\n");
+
+           fprintf (pFile, "m_total_ndms   : %d \n", m_total_ndms);
+           fprintf (pFile, "m_max_ndms     : %d \n", m_max_ndms);
+           fprintf (pFile, "m_max_dm       : %f \n", m_max_dm);
+           fprintf (pFile, "m_maxshift_high: %f \n", m_maxshift_high);
+
+
+           fclose (pFile);
+       }
+ 
+    }
+*/
+// edits end ----------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     m_ready = true;
     m_strategy_already_calculated = true;

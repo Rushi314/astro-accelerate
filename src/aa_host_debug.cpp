@@ -42,7 +42,7 @@ namespace astroaccelerate {
       printf("\nnchans:\t\t\t%d", nchans);
       printf("\nnifs:\t\t\t%d", nifs);
       printf("\nnbits:\t\t\t%d", nbits);
-      printf("\nnsamples:\t\t%d", nsamples);
+      printf("\nnsamplesss:\t\t%d", nsamples);
       printf("\nnsamp:\t\t\t%d", nsamp);
       printf("\nGot file header info:\t%.16g(s)\n", (double)(now - start_time) / CLOCKS_PER_SEC);
       fflush(stdout);

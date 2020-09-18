@@ -26,6 +26,8 @@
 
 #include "aa_log.hpp"
 
+#include "aa_sigproc_input.hpp"
+
 //#define EXPORT_DD_DATA
 
 namespace astroaccelerate {
@@ -68,13 +70,19 @@ namespace astroaccelerate {
 
     /** \brief Override base class next() method to process next time chunk. */
     bool next() override {
+	printf("\n 1. about to call run_pipeline\n");
       if(memory_allocated) {
+	printf("\n 2. about to call run_pipeline\n");
 	aa_pipeline_runner::status tmp;
         return run_pipeline(false, tmp);
       }
 
       return false;
     }
+
+
+
+
 
     /** \brief Override base class next() method to process next time chunk. Also provide a status code. */
     bool next(aa_pipeline_runner::status &status_code) override {
@@ -121,6 +129,7 @@ namespace astroaccelerate {
     /** \brief De-allocate memory for this pipeline instance. */
     bool cleanup() {
       if(memory_allocated && !memory_cleanup) {
+//      if(memory_allocated && memory_cleanup) {  // temp edit -- abhinav------------------------------------------------------------------------------------------
 	cudaFree(d_input);
 	cudaFree(d_output);
 
@@ -159,11 +168,13 @@ namespace astroaccelerate {
     int                enable_zero_dm_with_outliers;
     int                failsafe;
     long int           inc;
+    long int           inc_local;       // added - to track local inc processed and local telescope time processed
     float              tsamp;
     float              tsamp_original;
     int                maxshift_original;
     size_t             range;
     float              tstart_local;
+    float              tstart_true_local;
 
     unsigned short     *d_input;
     float              *d_output;
@@ -188,7 +199,7 @@ namespace astroaccelerate {
       size_t gpu_inputsize = (size_t) time_samps * (size_t) nchans * sizeof(unsigned short);
       cudaError_t cuda_return = cudaMalloc((void **) d_input, gpu_inputsize);
       if(cuda_return != cudaSuccess) {
-	LOG(log_level::error, "cudaMalloc failed.");
+	LOG(log_level::error, " 1. cudaMalloc failed.");
       }
 
       size_t gpu_outputsize = 0;
@@ -201,7 +212,7 @@ namespace astroaccelerate {
 
       cuda_return = cudaMalloc((void **) d_output, gpu_outputsize);
       if(cuda_return != cudaSuccess) {
-	LOG(log_level::error, "cudaMalloc failed.");
+	LOG(log_level::error, " 2. cudaMalloc failed.");
       }
       cuda_return = cudaMemset(*d_output, 0, gpu_outputsize);
       if(cuda_return != cudaSuccess) {
@@ -214,7 +225,7 @@ namespace astroaccelerate {
      */
     void allocate_memory_cpu_output() {
       size_t outputsize = 0;
-      const size_t range = m_ddtr_strategy.get_nRanges();
+      const size_t range = m_ddtr_strategy.range();
       const int *ndms = m_ddtr_strategy.ndms_data();
 
       outputsize = 0;
@@ -248,6 +259,13 @@ namespace astroaccelerate {
 	}
       }
 
+      printf("\n m_ddtr_strategy.metadata().fch1():: %f \n", m_ddtr_strategy.metadata().fch1());
+//      printf("\n maxshift::::::: %d \n", maxshift);
+//      printf("\n d_input::::::: %zu %d \n", d_input, d_input);
+
+
+      printf("\n aa_permitted_pipelines_1 :: m_ddtr_strategy.metadata().strat() :: %d \n", m_ddtr_strategy.metadata().strat());
+
       dm_shifts                       = m_ddtr_strategy.dmshifts();
       dmshifts                        = dm_shifts.data();
       maxshift                        = m_ddtr_strategy.maxshift();
@@ -258,15 +276,22 @@ namespace astroaccelerate {
       enable_zero_dm_with_outliers    = 0;
       failsafe                        = 0;
       inc                             = 0;
+      inc_local                       = 0;
       tsamp                           = m_ddtr_strategy.metadata().tsamp();
       tsamp_original                  = tsamp;
       maxshift_original               = maxshift;
-      range                           = m_ddtr_strategy.get_nRanges();
+      range                           = m_ddtr_strategy.range();
       tstart_local                    = 0.0;
+      tstart_true_local               = 0.0;
+
+// condition below added to avoid re-allocation of memory resources evertime an input buffer is read::
+//      if (m_ddtr_strategy.metadata().strat() != 1) {
 
       //Allocate GPU memory
       d_input                         = NULL;
       d_output                        = NULL;
+
+//      printf("\n maxshift::::::: %d \n", maxshift);
 
       allocate_memory_gpu(maxshift, max_ndms, nchans, t_processed, &d_input, &d_output);
       //Put the dm low, high, step struct contents into separate arrays again.
@@ -275,17 +300,22 @@ namespace astroaccelerate {
       //Allocate memory for CPU output for output buffer
       allocate_memory_cpu_output();
       
-      dm_low.resize(m_ddtr_strategy.get_nRanges());
-      dm_high.resize(m_ddtr_strategy.get_nRanges());
-      dm_step.resize(m_ddtr_strategy.get_nRanges());
-      inBin.resize(m_ddtr_strategy.get_nRanges());
-      for(size_t i = 0; i < m_ddtr_strategy.get_nRanges(); i++) {
+//      } // if strat condition ends here ---------------------------------------------------------------------------
+
+
+      dm_low.resize(m_ddtr_strategy.range());
+      dm_high.resize(m_ddtr_strategy.range());
+      dm_step.resize(m_ddtr_strategy.range());
+      inBin.resize(m_ddtr_strategy.range());
+      for(size_t i = 0; i < m_ddtr_strategy.range(); i++) {
 	dm_low[i]   = m_ddtr_strategy.dm(i).low;
 	dm_high[i]  = m_ddtr_strategy.dm(i).high;
 	dm_step[i]  = m_ddtr_strategy.dm(i).step;
 	inBin[i]    = m_ddtr_strategy.dm(i).inBin;
       }
-      
+
+//      printf("\n d_input>>::::::: %zu %d \n", d_input, d_input);
+
       memory_allocated = true;
       return true;
     }
@@ -301,13 +331,20 @@ namespace astroaccelerate {
      * \returns A boolean to indicate whether further time chunks are available to process (true) or not (false).
      */
     bool run_pipeline(const bool dump_to_host, aa_pipeline_runner::status &status_code) {
+//      int max_iter = 2;
+//      for (int buf_count =0; buf_count < max_iter; buf_count++)  // buf_count loop begins -----------------------------------------------------------------------
+//      {
+
       LOG(log_level::notice, "NOTICE: Pipeline start/resume run_pipeline_1.");
+      LOG(log_level::notice, "NOTICE: t:: " + std::to_string(t) + " num_tchunks:: " + std::to_string(num_tchunks));
+      printf("\n t:: %d num_tchunks:: %d \n", t, num_tchunks);
+
       if(t >= num_tchunks) {
 	m_timer.Stop();
 	float time = m_timer.Elapsed() / 1000;
 	LOG(log_level::dev_debug, "=== OVERALL DEDISPERSION THROUGHPUT INCLUDING SYNCS AND DATA TRANSFERS ===");
 	LOG(log_level::dev_debug, "(Performed Brute-Force Dedispersion:" + std::to_string(time) + "(GPU estimate)");
-	LOG(log_level::dev_debug, "Amount of telescope time processed: " + std::to_string(tstart_local));
+	LOG(log_level::dev_debug, "aa_permitted_pipelines_1 > 0. Amount of telescope time processed: " + std::to_string(tstart_local));
 	LOG(log_level::dev_debug, "Number of samples processed: " + std::to_string(inc));
 	LOG(log_level::dev_debug, "Real-time speedup factor: " + std::to_string(( tstart_local ) / time));
 
@@ -325,9 +362,21 @@ namespace astroaccelerate {
 	delete ranges_to_export;
 #endif
 	status_code = aa_pipeline_runner::status::finished;
+
+// more edits - abhinav ---------------------------------------------------------
+        t = 0;
 	return false;//In this case, there are no more chunks to process.
-      }
+
+/*        if(buf_count = max_iter) {
+	   return false;//In this case, there are no more chunks to process.
+           } 
+        else t == 0;
+*/
+// edits end --------------------------------------------------------------------
+
+      }				  // if num_tchunks condition ends here ------------------------------------------------------------------------------------------------------
       else if(t == 0) {
+        printf("\n t loop about to begin\n");
 	m_timer.Start();
       }
       printf("\nNOTICE: t_processed:\t%d, %d", t_processed[0][t], t);
@@ -335,7 +384,7 @@ namespace astroaccelerate {
       const int *ndms = m_ddtr_strategy.ndms_data();
 
       //checkCudaErrors(cudaGetLastError());
-      load_data(-1, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[0][t], maxshift, nchans, dmshifts, NULL);
+      load_data(-1, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[0][t], maxshift, nchans, dmshifts);
       //checkCudaErrors(cudaGetLastError());
       
       if(zero_dm_type == aa_pipeline::component_option::zero_dm) {
@@ -365,14 +414,14 @@ namespace astroaccelerate {
       int oldBin = 1;
       for(size_t dm_range = 0; dm_range < range; dm_range++) {
 	printf("\n\nNOTICE: %f\t%f\t%f\t%d\n", m_ddtr_strategy.dm(dm_range).low, m_ddtr_strategy.dm(dm_range).high, m_ddtr_strategy.dm(dm_range).step, m_ddtr_strategy.ndms(dm_range));
-	printf("\nAmount of telescope time processed: %f\n", tstart_local);
+	printf("\naa_permitted_pipelines_1 > 1. Amount of telescope time processed: %f\n", tstart_local);
 
 	maxshift = maxshift_original / inBin[dm_range];
 
 	cudaDeviceSynchronize();
 	//checkCudaErrors(cudaGetLastError());
 
-	load_data(dm_range, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[dm_range][t], maxshift, nchans, dmshifts, NULL);
+	load_data(dm_range, inBin.data(), d_input, &m_input_buffer[(long int) ( inc * nchans )], t_processed[dm_range][t], maxshift, nchans, dmshifts);
 
 	//checkCudaErrors(cudaGetLastError());
 
@@ -384,7 +433,7 @@ namespace astroaccelerate {
 
 	//checkCudaErrors(cudaGetLastError());
 
-	dedisperse(dm_range, t_processed[dm_range][t], inBin.data(), dmshifts, d_input, d_output, NULL, nchans, &tsamp, dm_low.data(), dm_step.data(), ndms, nbits, failsafe);
+	dedisperse(dm_range, t_processed[dm_range][t], inBin.data(), dmshifts, d_input, d_output, nchans, &tsamp, dm_low.data(), dm_step.data(), ndms, nbits, failsafe);
 
 	if(dump_to_host) {
 	  for (int k = 0; k < ndms[dm_range]; k++) {
@@ -393,19 +442,27 @@ namespace astroaccelerate {
 	}
 	//checkCudaErrors(cudaGetLastError());
 	oldBin = inBin[dm_range];
-      }
+      }  // dm_range loop ends here -------------------------------------------------------------------------------------------------------------------------------
 
       inc = inc + t_processed[0][t];
       printf("\nNOTICE: INC:\t%ld\n", inc);
       tstart_local = ( tsamp_original * inc );
+
+      inc_local = t_processed[0][t];
+      printf("\nNOTICE: INC_LOCAL:\t%ld\n", inc_local);
+      tstart_true_local = ( tsamp_original * inc_local );
+      printf("\nNOTICE: TSTART_TRUE_LOCAL:\t%f\n", tstart_true_local);
+
       tsamp = tsamp_original;
       maxshift = maxshift_original;
 
       ++t;
       printf("NOTICE: Pipeline ended run_pipeline_1 over chunk %d / %d.\n", t, num_tchunks);
       status_code = aa_pipeline_runner::status::has_more;
+
       return true;
-    }    
+    }
+//    } // buf_count loop ends here ----------------------------------------------------------------------------------------------------------------------------------    
   };
 
   template<> inline aa_permitted_pipelines_1<aa_pipeline::component_option::zero_dm, false>::aa_permitted_pipelines_1(const aa_ddtr_strategy &ddtr_strategy,

@@ -32,7 +32,7 @@ namespace astroaccelerate {
 			     m_MSD_data_info(0),
 			     m_MSD_profile_size_in_bytes(0),
 			     m_h_MSD_DIT_width(0),
-			     m_candidate_algorithm(aa_analysis_plan::selectable_candidate_algorithm::peak_find),
+			     m_candidate_algorithm(aa_analysis_plan::selectable_candidate_algorithm::off),
 			     m_enable_msd_baseline_noise(0),
 			     m_ready(false) {
       
@@ -128,21 +128,19 @@ namespace astroaccelerate {
 
     /** \returns an integer to indicate whether the candidate algorithm will be enabled or disabled. 0 for off, and 1 for on. */
     int candidate_algorithm() const {
-		switch(m_candidate_algorithm) {
-			case aa_analysis_plan::selectable_candidate_algorithm::peak_find:
-				return 0;
-				break;
-			case aa_analysis_plan::selectable_candidate_algorithm::threshold:
-				return 1;
-				break;
-			case aa_analysis_plan::selectable_candidate_algorithm::peak_filtering:
-				return 2;
-				break;
-			default:
-				return 0;
-				break;
-		}
-		return 0;
+      switch(m_candidate_algorithm) {
+      case aa_analysis_plan::selectable_candidate_algorithm::off:
+	return 0;
+	break;
+      case aa_analysis_plan::selectable_candidate_algorithm::on:
+	return 1;
+	break;
+      default:
+	return 0;
+	break;
+      }
+      
+      return 0;
     }
 
     /** \returns an integer to indicate whether the msd baseline noise reduction algorithm will be enabled or disabled. 0 for off (false), 1 for on (true). */
@@ -212,6 +210,7 @@ namespace astroaccelerate {
       size_t vals;
       // Calculate the total number of values
       vals = ((size_t) nDMs)*((size_t) nTimesamples);
+      
 
       aa_device_info& mem = aa_device_info::instance();
       size_t free_mem = mem.gpu_memory() - mem.requested();
@@ -220,8 +219,11 @@ namespace astroaccelerate {
       printf("  Memory available:%0.3f MB \n", ((float) free_mem)/(1024.0*1024.0) );
       maxtimesamples = (free_mem*0.95)/((5.5*sizeof(float) + 2*sizeof(ushort)));
       printf("  Max samples: :%lu\n", maxtimesamples);
+      printf(" nTimesamples: %d \n", nTimesamples );
+      printf(" tsamps: %f \n", tsamp );
 
       int DMs_per_cycle = maxtimesamples/nTimesamples;
+      printf("\n  DMs_per_cycle: %i",DMs_per_cycle);
       int itemp = (int) (DMs_per_cycle/THR_WARPS_PER_BLOCK);
       DMs_per_cycle = itemp*THR_WARPS_PER_BLOCK;
       printf("\n  DMs_per_cycle: %i",DMs_per_cycle);
