@@ -1,5 +1,11 @@
-## Updates to the astroacclerate pipeline for realtime processing of data from Giant Meterwave Radio Telescope, Kholad, Pune , India
+## Objective: To create a fully autonomous data analysis pipeline to search for Fast Radio Bursts (FRBs) working 24*7 for all observing frequency bands of Giant Metrerwave Radio Telescope, Kholad, Pune , India
 
+
+![GMRT-SHM-AstroAcclerate pipeine work flow](https://github.com/Rushi314/astro-accelerate-for-GMRT-with-Shared-Memory/blob/master/NCRA%20(1).png)
+
+
+
+## Updates to the astroacclerate pipeline for realtime processing of data from GMRT
 
 ## i) Python script documentation - spsplotii_frb_detect.py
 #### Matched filtering with Gaussian pulse to identify the FRBs from the actroacclerate pipeline output
@@ -24,7 +30,4 @@ In the equations above, f is a gaussian weightage of each SNR, depending upon ho
 The value stored in w provides a distinction between FRBs and the background noise. Finally a threshold value is set at 1.3 and the code checks if any of w values is higher than the mean of w multiplied by this threshold. 
 If there is any data that crosses this threshold, we treat it as an FRB detection. Sometimes, consecutive DM points on the grid can have overlap from FRB data. Therefore, the grid point with maximum w value is chosen among them.
 Lastly, the maximum SNR value is found around this grid point and its associated DM, width and time values are printed to screen.
-
-
-
-### Objective: To create a fully autonomous data analysis pipeline to look for Fast Radio Bursts (FRBs) working 24*7 for all observing frequency bands of Giant Metrerwave Radio Telescope. 
+ 
