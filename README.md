@@ -11,7 +11,10 @@
 #### Matched filtering with Gaussian pulse to identify the FRBs from the actroacclerate pipeline output
 
 To run the code, use:
-python spsplotii_frb_detect.py fname --ls 1.0 --auto True
+
+In a terminal window, type
+
+    python spsplotii_frb_detect.py fname --ls 1.0 --auto True
 
 In the command above, replace the “fname” with filename of the input data file. It is recommended to run the code with a low value of “--ls” such as 1.0. This will allow for maximum data capture from the input file such that the mean SNR of the data is much lower than the SNR of the FRB.
 
