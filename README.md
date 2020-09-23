@@ -1,4 +1,4 @@
-## Objective: To create a fully autonomous data analysis pipeline to search for Fast Radio Bursts (FRBs) working 24*7 for all observing frequency bands of Giant Metrerwave Radio Telescope, Kholad, Pune , India
+## Objective: To create a fully autonomous data analysis pipeline to search for Fast Radio Bursts (FRBs) working 24*7 for all observing frequency bands of Giant Metrerwave Radio Telescope, under NCRA-TIFR, Pune , India
 
 
 ![GMRT-SHM-AstroAcclerate pipeine work flow](https://github.com/Rushi314/astro-accelerate-for-GMRT-with-Shared-Memory/blob/master/NCRA%20(1).png)
